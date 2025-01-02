@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class CursorManager : MonoBehaviour
 {
@@ -14,6 +15,21 @@ public class CursorManager : MonoBehaviour
     private Texture2D[] hoverTextures;     // Converted Texture2D array
     private int currentFrame = 0;
     private float frameRate = 10f;
+    public static CursorManager Instance; // Singleton instance for global access
+
+    void Awake()
+    {
+        // Ensure only one instance exists
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject); // Prevent destruction on scene load
+        }
+        else
+        {
+            Destroy(gameObject); // Destroy duplicate instances
+        }
+    }
 
     void Start()
     {
@@ -32,7 +48,9 @@ public class CursorManager : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out RaycastHit hit) && hit.collider.GetComponent<TalkCursorMarker>() != null)
         {
-            if (!isHovering) StartHoverAnimation();
+            if (!isHovering) {
+                StartHoverAnimation();
+            }
         }
         else if (isHovering)
         {
@@ -42,8 +60,24 @@ public class CursorManager : MonoBehaviour
 
     private void HandleClick()
     {
-        if (Input.GetMouseButtonDown(0)) Cursor.SetCursor(clickCursor, hotSpot, cursorMode);
-        else if (Input.GetMouseButtonUp(0) && !isHovering) Cursor.SetCursor(defaultCursor, hotSpot, cursorMode);
+        // Change cursor only if it's not already hovering.
+        if (!isHovering) {
+            if (Input.GetMouseButtonDown(0)) Cursor.SetCursor(clickCursor, hotSpot, cursorMode);
+            else if (Input.GetMouseButtonUp(0) && !isHovering) Cursor.SetCursor(defaultCursor, hotSpot, cursorMode);
+        }
+        else {
+            
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        
+        if (Input.GetMouseButtonDown(0) && Physics.Raycast(ray, out RaycastHit hit) && hit.collider.GetComponent<TalkCursorMarker>() != null) {
+            if (hit.collider.GetComponent<TalkCursorMarker>().name == "Capsule") {
+                SceneManager.LoadScene(sceneName: "World");
+            }
+            if (hit.collider.GetComponent<TalkCursorMarker>().name == "Cube") {
+                SceneManager.LoadScene(sceneName: "ServerSelect");
+            }
+        }
+        }
     }
 
     private void StartHoverAnimation()
