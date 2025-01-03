@@ -2,57 +2,84 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-  public float speed = 5f;
-  private Vector3 targetPosition;
-  private bool isMoving = false;
+    public float speed = 5f;
+    private Vector3 targetPosition;
+    private bool isMoving = false;
 
-  void Start()
-  {
-    // Initialize the target position to the current position
-    targetPosition = transform.position;
-  }
+    // Reference to the terrain
+    private Terrain terrain;
 
-  void Update()
-  {
-    // Check for mouse click or hold
-    if (Input.GetMouseButton(0))
+    void Start()
     {
-      // Raycast to find the clicked point on the ground
-      Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-      if (Physics.Raycast(ray, out RaycastHit hit))
-      {
-        // Calculate the difference between the current position and the clicked position
-        Vector3 difference = new Vector3(
-            Mathf.Abs(hit.point.x - transform.position.x),
-            0,
-            Mathf.Abs(hit.point.z - transform.position.z)
-        );
+        // Initialize the target position to the current position
+        targetPosition = transform.position;
 
-        // Check if the click is at least 1 unit away on X or Z
-        if (difference.x >= 1f || difference.z >= 1f)
+        // Find the terrain in the scene (assuming there's only one)
+        terrain = Terrain.activeTerrain;
+        AdjustToTerrainHeight();
+        
+    }
+
+    void Update()
+    {
+        // Check for mouse click or hold
+        if (Input.GetMouseButton(0))
         {
-          // Update the target position, rounding X and Z to the nearest integers
-          targetPosition = new Vector3(
-              Mathf.Round(hit.point.x),   // Round X to the nearest whole number
-              transform.position.y,      // Preserve the current Y position
-              Mathf.Round(hit.point.z)   // Round Z to the nearest whole number
-          );
-          isMoving = true;
+            // Raycast to find the clicked point on the ground
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out RaycastHit hit))
+            {
+                // Calculate the difference between the current position and the clicked position
+                Vector3 difference = new Vector3(
+                    Mathf.Abs(hit.point.x - transform.position.x),
+                    0,
+                    Mathf.Abs(hit.point.z - transform.position.z)
+                );
+
+                // Check if the click is at least 1 unit away on X or Z
+                if (difference.x >= 1f || difference.z >= 1f)
+                {
+                    // Update the target position, rounding X and Z to the nearest integers
+                    targetPosition = new Vector3(
+                        Mathf.Round(hit.point.x),   // Round X to the nearest whole number
+                        transform.position.y,      // Y position will be adjusted dynamically
+                        Mathf.Round(hit.point.z)   // Round Z to the nearest whole number
+                    );
+                    isMoving = true;
+                }
+            }
         }
-      }
+
+        // Move the player towards the target position
+        if (isMoving)
+        {
+            // Move the object directly towards the target, snapping to the rounded position
+            transform.position = Vector3.MoveTowards(transform.position, targetPosition, speed * Time.deltaTime);
+
+            // Adjust the Y position based on the terrain height
+            AdjustToTerrainHeight();
+
+            // Stop moving when the target is reached
+            if (transform.position == targetPosition)
+            {
+                isMoving = false;
+            }
+        }
     }
 
-    // Move the player towards the target position
-    if (isMoving)
+    private void AdjustToTerrainHeight()
     {
-      // Move the object directly towards the target, snapping to the rounded position
-      transform.position = Vector3.MoveTowards(transform.position, targetPosition, speed * Time.deltaTime);
+        if (terrain != null)
+        {
+            // Get the terrain height at the player's current position
+            float terrainHeight = terrain.SampleHeight(transform.position);
 
-      // Stop moving when the target is reached
-      if (transform.position == targetPosition)
-      {
-        isMoving = false;
-      }
+            // Update the Y position to always be slightly above the terrain
+            transform.position = new Vector3(
+                transform.position.x,
+                terrainHeight + 1f, // Add a small offset to ensure the object is above the terrain
+                transform.position.z
+            );
+        }
     }
-  }
 }
