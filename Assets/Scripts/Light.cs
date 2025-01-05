@@ -29,10 +29,10 @@ public class LightmapToLights : MonoBehaviour
         }
         else
         {
-            // Clear existing lights
-            foreach (Transform child in lightsParent.transform)
+            // Clear all existing children of the sub-parent
+            for (int i = lightsParent.transform.childCount - 1; i >= 0; i--)
             {
-                DestroyImmediate(child.gameObject);
+                DestroyImmediate(lightsParent.transform.GetChild(i).gameObject);
             }
         }
 
@@ -69,6 +69,7 @@ public class LightmapToLights : MonoBehaviour
         }
     }
 
+
     void CreatePointLight(Vector3 position, float brightness, Color lightColor)
     {
         // Create a new light object
@@ -85,6 +86,9 @@ public class LightmapToLights : MonoBehaviour
             lightObj = new GameObject("PointLight");
             Light light = lightObj.AddComponent<Light>();
             light.type = LightType.Point;
+            var bakingOutput = light.bakingOutput;
+            bakingOutput.lightmapBakeType = LightmapBakeType.Baked;
+            light.bakingOutput = bakingOutput;
 
             // Set light properties
             light.intensity = brightness * intensityMultiplier; // Scale brightness
