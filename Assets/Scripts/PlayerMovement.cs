@@ -38,6 +38,11 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
+        
+        if (!agent.pathPending && agent.remainingDistance == 0f) {
+            agent.ResetPath();
+        }
+
         // Update the visual path
         DrawPath();
     }

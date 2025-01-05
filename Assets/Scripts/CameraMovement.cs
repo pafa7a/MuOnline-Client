@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 public class CameraMovement : MonoBehaviour
@@ -36,22 +35,22 @@ public class CameraMovement : MonoBehaviour
         if (PlayerManager.Instance != null)
         {
             player = PlayerManager.Instance.transform;
-
-            // Calculate the rotated offset
-            Quaternion rotation = Quaternion.Euler(currentPitch, currentYaw, 0); // Combine vertical and horizontal rotation
-            Vector3 rotatedOffset = rotation * offset;
-
-            // Desired position of the camera
-            Vector3 desiredPosition = player.position + rotatedOffset;
-
-            // Smoothly interpolate between the camera's current position and the desired position
-            Vector3 smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed);
-
-            // Update the camera's position
-            transform.position = smoothedPosition;
-
-            // Optionally, make the camera look at the Player
-            transform.LookAt(player);
         }
+
+        // Calculate the rotated offset
+        Quaternion rotation = Quaternion.Euler(currentPitch, currentYaw, 0); // Combine vertical and horizontal rotation
+        Vector3 rotatedOffset = rotation * offset;
+
+        // Desired position of the camera
+        Vector3 desiredPosition = player.position + rotatedOffset;
+
+        // Smoothly interpolate between the camera's current position and the desired position
+        Vector3 smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed);
+
+        // Update the camera's position
+        transform.position = smoothedPosition;
+
+        // Optionally, make the camera look at the Player
+        transform.LookAt(player);
     }
 }
