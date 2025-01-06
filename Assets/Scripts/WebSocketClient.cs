@@ -62,7 +62,9 @@ public class WebSocketClient : MonoBehaviour
 
     private void Update()
     {
-        websocket?.DispatchMessageQueue();
+        #if !UNITY_WEBGL || UNITY_EDITOR
+            websocket.DispatchMessageQueue();
+        #endif
     }
 
     private async void OnApplicationQuit()
