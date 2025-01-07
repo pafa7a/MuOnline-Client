@@ -9,12 +9,8 @@ using ConnectProto;
 
 public class WebSocketClient : MonoBehaviour
 {
-    [NonSerialized]
     private static WebSocketClient instance;
-
-    [NonSerialized]
     private WebSocket websocket;
-
     private Dictionary<string, List<Type>> messageTypeToHandlerTypesCache = new Dictionary<string, List<Type>>();
 
     private void Awake()
@@ -69,6 +65,11 @@ public class WebSocketClient : MonoBehaviour
         websocket.OnClose += (e) =>
         {
             Debug.Log("WebSocket connection closed.");
+            //@TODO: Handle with reconnect scene and test in WebGL!
+            if (instance != null)
+            {
+                Invoke(nameof(InitializeWebSocket), 5);  // Reconnect after 5 seconds if the instance is still valid
+            }
         };
 
         await websocket.Connect();

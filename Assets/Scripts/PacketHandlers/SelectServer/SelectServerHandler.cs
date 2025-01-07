@@ -1,8 +1,7 @@
 using ConnectProto;
-using Unity.VisualScripting;
 using UnityEngine;
 
-[MessageType("HelloResponse")]
+[MessageType("ServerListResponse")]
 public class SelectServerHandler : IMessageHandler
 {
     private SelectServerManager _selectServerManager;
@@ -15,9 +14,8 @@ public class SelectServerHandler : IMessageHandler
         }
         _selectServerManager = SelectServerManager.Instance;
         // Parse the HelloResponse message
-        HelloResponse helloResponse = HelloResponse.Parser.ParseFrom(message);
-        Debug.Log($"Received HelloResponse: {helloResponse.Message}");
-        _selectServerManager.DisplayServersList();
+        ServerListResponse serverListResponse = ServerListResponse.Parser.ParseFrom(message);
+        _selectServerManager.DisplayServersList(serverListResponse.Servers);
 
     }
 }
