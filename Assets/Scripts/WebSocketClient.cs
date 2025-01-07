@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using UnityEngine;
 using NativeWebSocket;
 using Google.Protobuf;
@@ -11,6 +14,8 @@ public class WebSocketClient : MonoBehaviour
 
     [NonSerialized]
     private WebSocket websocket;
+
+    private Dictionary<string, List<Type>> messageTypeToHandlerTypesCache = new Dictionary<string, List<Type>>();
 
     private void Awake()
     {
@@ -29,6 +34,16 @@ public class WebSocketClient : MonoBehaviour
         {
             InitializeWebSocket();
         }
+
+        // Cache handler types after WebSocket initialization
+        CacheHandlerTypes();
+    }
+
+    private void Update()
+    {
+#if !UNITY_WEBGL || UNITY_EDITOR
+        websocket.DispatchMessageQueue();
+#endif
     }
 
     private async void InitializeWebSocket()
@@ -43,7 +58,6 @@ public class WebSocketClient : MonoBehaviour
 
         websocket.OnMessage += (bytes) =>
         {
-            Debug.Log("Message received.");
             HandleMessage(bytes);
         };
 
@@ -60,11 +74,38 @@ public class WebSocketClient : MonoBehaviour
         await websocket.Connect();
     }
 
-    private void Update()
+    private void CacheHandlerTypes()
     {
-        #if !UNITY_WEBGL || UNITY_EDITOR
-            websocket.DispatchMessageQueue();
-        #endif
+        var handlerTypes = Assembly.GetExecutingAssembly().GetTypes()
+            .Where(t => typeof(IMessageHandler).IsAssignableFrom(t) && !t.IsInterface && !t.IsAbstract)
+            .Where(t => t.GetCustomAttributes<MessageTypeAttribute>().Any())
+            .ToList();
+
+        foreach (var handlerType in handlerTypes)
+        {
+            var messageType = handlerType.GetCustomAttribute<MessageTypeAttribute>().MessageType;
+            if (!messageTypeToHandlerTypesCache.ContainsKey(messageType))
+            {
+                messageTypeToHandlerTypesCache[messageType] = new List<Type>();
+            }
+            messageTypeToHandlerTypesCache[messageType].Add(handlerType);
+        }
+    }
+
+    private void DispatchMessage(string messageType, byte[] message)
+    {
+        if (messageTypeToHandlerTypesCache.TryGetValue(messageType, out var handlerTypes))
+        {
+            foreach (var handlerType in handlerTypes)
+            {
+                var handlerInstance = (IMessageHandler)Activator.CreateInstance(handlerType);
+                handlerInstance.HandleMessage(message);
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"No handlers found for message type: {messageType}");
+        }
     }
 
     private async void OnApplicationQuit()
@@ -97,23 +138,6 @@ public class WebSocketClient : MonoBehaviour
     private void HandleMessage(byte[] bytes)
     {
         Wrapper wrapper = Wrapper.Parser.ParseFrom(bytes);
-        Debug.Log($"Received message type: {wrapper.Type}");
-
-        switch (wrapper.Type)
-        {
-            case "HelloResponse":
-                var helloResponse = HelloResponse.Parser.ParseFrom(wrapper.Payload);
-                Debug.Log($"Received HelloResponse: {helloResponse.Message}");
-                SendHelloMessage();
-                break;
-            case "HelloResponse2":
-                var helloResponse2 = HelloResponse.Parser.ParseFrom(wrapper.Payload);
-                Debug.Log($"Received HelloResponse2: {helloResponse2.Message}");
-                break;
-
-            default:
-                Debug.LogWarning($"Unknown message type: {wrapper.Type}");
-                break;
-        }
+        DispatchMessage(wrapper.Type, wrapper.Payload.ToByteArray());
     }
 }
