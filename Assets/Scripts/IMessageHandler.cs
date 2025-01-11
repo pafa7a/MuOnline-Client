@@ -1,6 +1,6 @@
-using NativeWebSocket;
+using System;
 
 public interface IMessageHandler
 {
-    void HandleMessage(byte[] message, WebSocket websocket);
+    void HandleMessage(byte[] message, Action<byte[]> sendMessage);
 }

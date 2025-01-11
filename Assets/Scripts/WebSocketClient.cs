@@ -4,11 +4,13 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using NativeWebSocket;
-using Google.Protobuf;
 using ConnectProto;
 
 public class WebSocketClient : MonoBehaviour
 {
+
+    [SerializeField]
+    private bool _debugConnection = false;
     private static WebSocketClient instance;
     private WebSocket websocket;
     private Dictionary<string, List<Type>> messageTypeToHandlerTypesCache = new Dictionary<string, List<Type>>();
@@ -78,6 +80,18 @@ public class WebSocketClient : MonoBehaviour
         await websocket.Connect();
     }
 
+    private void Send(byte[] data)
+    {
+        if (_debugConnection)
+        {
+            // Log the message being sent
+            Wrapper wrapper = Wrapper.Parser.ParseFrom(data);
+            Debug.Log($"C->S: {wrapper.Type}");
+        }
+        // Send the message using the websocket instance
+        websocket.Send(data);
+    }
+
     private void CacheHandlerTypes()
     {
         var handlerTypes = Assembly.GetExecutingAssembly().GetTypes()
@@ -103,7 +117,7 @@ public class WebSocketClient : MonoBehaviour
             foreach (var handlerType in handlerTypes)
             {
                 var handlerInstance = (IMessageHandler)Activator.CreateInstance(handlerType);
-                handlerInstance.HandleMessage(message, websocket);
+                handlerInstance.HandleMessage(message, Send);
             }
         }
         else
@@ -125,6 +139,10 @@ public class WebSocketClient : MonoBehaviour
     private void HandleMessage(byte[] bytes)
     {
         Wrapper wrapper = Wrapper.Parser.ParseFrom(bytes);
+        if (_debugConnection)
+        {
+            Debug.Log($"S->C: {wrapper.Type}");
+        }
         DispatchMessage(wrapper.Type, wrapper.Payload.ToByteArray());
     }
 }

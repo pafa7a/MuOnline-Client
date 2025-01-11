@@ -1,12 +1,12 @@
+using System;
 using ConnectProto;
-using NativeWebSocket;
 
 [MessageType("ServerList")]
 public class ServerListHandler : IMessageHandler
 {
     private SelectServerManager _selectServerManager;
 
-    public void HandleMessage(byte[] message, WebSocket websocket)
+    public void HandleMessage(byte[] message, Action<byte[]> sendMessage)
     {
         if (SelectServerManager.Instance == null)
         {
