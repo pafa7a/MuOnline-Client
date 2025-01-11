@@ -44,7 +44,11 @@ public class WebSocketClient : MonoBehaviour
 
     private async void InitializeWebSocket()
     {
-        websocket = new WebSocket("ws://localhost:8080");
+        websocket = new WebSocket("ws://localhost:8080", new Dictionary<string, string>
+            {
+                {"clientType", Application.platform.ToString()},
+                {"clientVersion", SystemInfo.operatingSystem}
+            });
 
         websocket.OnOpen += () =>
         {
