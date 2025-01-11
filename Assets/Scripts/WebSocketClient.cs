@@ -53,7 +53,6 @@ public class WebSocketClient : MonoBehaviour
         websocket.OnOpen += () =>
         {
             Debug.Log("WebSocket connection opened.");
-            SendHelloMessage(); // Optional: Send a Hello message upon connection
         };
 
         websocket.OnMessage += (bytes) =>
@@ -104,7 +103,7 @@ public class WebSocketClient : MonoBehaviour
             foreach (var handlerType in handlerTypes)
             {
                 var handlerInstance = (IMessageHandler)Activator.CreateInstance(handlerType);
-                handlerInstance.HandleMessage(message);
+                handlerInstance.HandleMessage(message, websocket);
             }
         }
         else
@@ -121,23 +120,6 @@ public class WebSocketClient : MonoBehaviour
             await websocket.Close();
             websocket = null;
         }
-    }
-
-    private void SendHelloMessage()
-    {
-        HelloResponse helloMessage = new HelloResponse
-        {
-            Message = "Hello, server!"
-        };
-
-        Wrapper wrapper = new Wrapper
-        {
-            Type = "HelloResponse",
-            Payload = ByteString.CopyFrom(helloMessage.ToByteArray())
-        };
-
-        websocket.Send(wrapper.ToByteArray());
-        Debug.Log("Sent HelloResponse message to the server.");
     }
 
     private void HandleMessage(byte[] bytes)

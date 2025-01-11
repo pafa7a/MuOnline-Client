@@ -1,22 +1,21 @@
 using ConnectProto;
-using UnityEngine;
+using NativeWebSocket;
 
-[MessageType("ServerListResponse")]
-public class SelectServerHandler : IMessageHandler
+[MessageType("ServerList")]
+public class ServerListHandler : IMessageHandler
 {
     private SelectServerManager _selectServerManager;
 
-    public void HandleMessage(byte[] message)
+    public void HandleMessage(byte[] message, WebSocket websocket)
     {
         if (SelectServerManager.Instance == null)
         {
             return;
         }
         _selectServerManager = SelectServerManager.Instance;
-        // Parse the HelloResponse message
-        ServerListResponse serverListResponse = ServerListResponse.Parser.ParseFrom(message);
+        // Parse the ServerListResponse message
+        ServerList serverListResponse = ServerList.Parser.ParseFrom(message);
         _selectServerManager.DisplayServersList(serverListResponse.Servers);
 
     }
 }
-
