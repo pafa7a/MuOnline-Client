@@ -10,6 +10,8 @@ public class WebSocketClient : MonoBehaviour
 {
 
     [SerializeField]
+    private int _connectServerPort = 44405;
+    [SerializeField]
     private bool _debugConnection = false;
     private static WebSocketClient instance;
     private WebSocket websocket;
@@ -46,7 +48,7 @@ public class WebSocketClient : MonoBehaviour
 
     private async void InitializeWebSocket()
     {
-        websocket = new WebSocket("ws://localhost:8080", new Dictionary<string, string>
+        websocket = new WebSocket($"ws://localhost:{_connectServerPort}", new Dictionary<string, string>
             {
                 {"clientType", Application.platform.ToString()},
                 {"clientVersion", SystemInfo.operatingSystem}
