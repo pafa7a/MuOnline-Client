@@ -46,7 +46,7 @@ public class PlayerManager : MonoBehaviour
         if (_shouldDisplayPlayerCoordinates)
         {
             _canvas.PlayerCoordinatesObject.gameObject.SetActive(_canvas.PlayerCoordinatesDisplay);
-            _canvas.PlayerCoordinatesObject.text = $"Player2: X: {gameObject.transform.position.x:F0}, Y: {gameObject.transform.position.z:F0}";
+            _canvas.PlayerCoordinatesObject.text = $"Player: X: {gameObject.transform.position.x:F0}, Y: {gameObject.transform.position.z:F0}";
         }
     }
 }
