@@ -1181,7 +1181,7 @@ MonoBehaviour:
   MouseCoordinates: {fileID: 151424242}
   MouseCoordinatesDisplay: 1
   PlayerCoordinatesObject: {fileID: 719540123}
-  PlayerCoordinatesDisplay: 1
+  PlayerCoordinatesDisplay: 0
 --- !u!1 &1577329226
 GameObject:
   m_ObjectHideFlags: 0

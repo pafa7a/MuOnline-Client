@@ -42,7 +42,10 @@ public class WebSocketClient : MonoBehaviour
     private void Update()
     {
 #if !UNITY_WEBGL || UNITY_EDITOR
-        websocket.DispatchMessageQueue();
+        if (websocket != null)
+        {
+            websocket.DispatchMessageQueue();
+        }
 #endif
     }
 

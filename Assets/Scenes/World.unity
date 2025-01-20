@@ -270,6 +270,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74534609bd348974691ed611b66e7f35, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 1909595615}
   offset: {x: 0, y: 10, z: -10}
   smoothSpeed: 1
   scrollSensitivity: 2

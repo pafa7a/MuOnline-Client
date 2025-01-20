@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class CameraMovement : MonoBehaviour
 {
+    [SerializeField]
     private Transform player; // Reference to the Player object
     public Vector3 offset = new Vector3(0, 10, -10);   // Offset from the Player
     public float smoothSpeed = 1f; // Speed of the camera's smoothing
@@ -30,11 +31,6 @@ public class CameraMovement : MonoBehaviour
             currentYaw += mouseX * rotationSpeed; // Update the yaw (horizontal rotation)
             currentPitch -= mouseY * rotationSpeed; // Update the pitch (vertical rotation)
             currentPitch = Mathf.Clamp(currentPitch, minVerticalAngle, maxVerticalAngle); // Clamp vertical angle
-        }
-
-        if (PlayerManager.Instance != null)
-        {
-            player = PlayerManager.Instance.transform;
         }
 
         // Calculate the rotated offset
