@@ -25,16 +25,19 @@ namespace ConnectProto {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "ChpzcmMvbWVzc2FnZXMvY29ubmVjdC5wcm90byIoCgdXcmFwcGVyEgwKBHR5",
-            "cGUYASABKAkSDwoHcGF5bG9hZBgCIAEoDCI0CgpTZXJ2ZXJJbmZvEgwKBG5h",
-            "bWUYASABKAkSCgoCaXAYAiABKAkSDAoEcG9ydBgDIAEoBSIqCgpTZXJ2ZXJM",
-            "aXN0EhwKB3NlcnZlcnMYASADKAsyCy5TZXJ2ZXJJbmZvQg+qAgxDb25uZWN0",
-            "UHJvdG9iBnByb3RvMw=="));
+            "cGUYASABKAkSDwoHcGF5bG9hZBgCIAEoDCJYCgpTZXJ2ZXJJbmZvEgwKBG5h",
+            "bWUYASABKAkSCgoCaXAYAiABKAkSDAoEcG9ydBgDIAEoBRIKCgJpZBgEIAEo",
+            "BRIWCg5sb2FkUGVyY2VudGFnZRgFIAEoAiI9Cg9TZXJ2ZXJHcm91cEluZm8S",
+            "DAoEbmFtZRgBIAEoCRIcCgdzZXJ2ZXJzGAIgAygLMgsuU2VydmVySW5mbyI5",
+            "Cg9TZXJ2ZXJHcm91cExpc3QSJgoMc2VydmVyR3JvdXBzGAEgAygLMhAuU2Vy",
+            "dmVyR3JvdXBJbmZvQg+qAgxDb25uZWN0UHJvdG9iBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::ConnectProto.Wrapper), global::ConnectProto.Wrapper.Parser, new[]{ "Type", "Payload" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::ConnectProto.ServerInfo), global::ConnectProto.ServerInfo.Parser, new[]{ "Name", "Ip", "Port" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::ConnectProto.ServerList), global::ConnectProto.ServerList.Parser, new[]{ "Servers" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::ConnectProto.ServerInfo), global::ConnectProto.ServerInfo.Parser, new[]{ "Name", "Ip", "Port", "Id", "LoadPercentage" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::ConnectProto.ServerGroupInfo), global::ConnectProto.ServerGroupInfo.Parser, new[]{ "Name", "Servers" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::ConnectProto.ServerGroupList), global::ConnectProto.ServerGroupList.Parser, new[]{ "ServerGroups" }, null, null, null, null)
           }));
     }
     #endregion
@@ -314,6 +317,8 @@ namespace ConnectProto {
       name_ = other.name_;
       ip_ = other.ip_;
       port_ = other.port_;
+      id_ = other.id_;
+      loadPercentage_ = other.loadPercentage_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -359,6 +364,30 @@ namespace ConnectProto {
       }
     }
 
+    /// <summary>Field number for the "id" field.</summary>
+    public const int IdFieldNumber = 4;
+    private int id_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int Id {
+      get { return id_; }
+      set {
+        id_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "loadPercentage" field.</summary>
+    public const int LoadPercentageFieldNumber = 5;
+    private float loadPercentage_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public float LoadPercentage {
+      get { return loadPercentage_; }
+      set {
+        loadPercentage_ = value;
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
@@ -377,6 +406,8 @@ namespace ConnectProto {
       if (Name != other.Name) return false;
       if (Ip != other.Ip) return false;
       if (Port != other.Port) return false;
+      if (Id != other.Id) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(LoadPercentage, other.LoadPercentage)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -387,6 +418,8 @@ namespace ConnectProto {
       if (Name.Length != 0) hash ^= Name.GetHashCode();
       if (Ip.Length != 0) hash ^= Ip.GetHashCode();
       if (Port != 0) hash ^= Port.GetHashCode();
+      if (Id != 0) hash ^= Id.GetHashCode();
+      if (LoadPercentage != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(LoadPercentage);
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -417,6 +450,14 @@ namespace ConnectProto {
         output.WriteRawTag(24);
         output.WriteInt32(Port);
       }
+      if (Id != 0) {
+        output.WriteRawTag(32);
+        output.WriteInt32(Id);
+      }
+      if (LoadPercentage != 0F) {
+        output.WriteRawTag(45);
+        output.WriteFloat(LoadPercentage);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -439,6 +480,14 @@ namespace ConnectProto {
         output.WriteRawTag(24);
         output.WriteInt32(Port);
       }
+      if (Id != 0) {
+        output.WriteRawTag(32);
+        output.WriteInt32(Id);
+      }
+      if (LoadPercentage != 0F) {
+        output.WriteRawTag(45);
+        output.WriteFloat(LoadPercentage);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -457,6 +506,12 @@ namespace ConnectProto {
       }
       if (Port != 0) {
         size += 1 + pb::CodedOutputStream.ComputeInt32Size(Port);
+      }
+      if (Id != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Id);
+      }
+      if (LoadPercentage != 0F) {
+        size += 1 + 4;
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -478,6 +533,12 @@ namespace ConnectProto {
       }
       if (other.Port != 0) {
         Port = other.Port;
+      }
+      if (other.Id != 0) {
+        Id = other.Id;
+      }
+      if (other.LoadPercentage != 0F) {
+        LoadPercentage = other.LoadPercentage;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -508,6 +569,14 @@ namespace ConnectProto {
           }
           case 24: {
             Port = input.ReadInt32();
+            break;
+          }
+          case 32: {
+            Id = input.ReadInt32();
+            break;
+          }
+          case 45: {
+            LoadPercentage = input.ReadFloat();
             break;
           }
         }
@@ -541,6 +610,14 @@ namespace ConnectProto {
             Port = input.ReadInt32();
             break;
           }
+          case 32: {
+            Id = input.ReadInt32();
+            break;
+          }
+          case 45: {
+            LoadPercentage = input.ReadFloat();
+            break;
+          }
         }
       }
     }
@@ -549,16 +626,16 @@ namespace ConnectProto {
   }
 
   [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
-  public sealed partial class ServerList : pb::IMessage<ServerList>
+  public sealed partial class ServerGroupInfo : pb::IMessage<ServerGroupInfo>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
   #endif
   {
-    private static readonly pb::MessageParser<ServerList> _parser = new pb::MessageParser<ServerList>(() => new ServerList());
+    private static readonly pb::MessageParser<ServerGroupInfo> _parser = new pb::MessageParser<ServerGroupInfo>(() => new ServerGroupInfo());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static pb::MessageParser<ServerList> Parser { get { return _parser; } }
+    public static pb::MessageParser<ServerGroupInfo> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -574,7 +651,7 @@ namespace ConnectProto {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public ServerList() {
+    public ServerGroupInfo() {
       OnConstruction();
     }
 
@@ -582,21 +659,34 @@ namespace ConnectProto {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public ServerList(ServerList other) : this() {
+    public ServerGroupInfo(ServerGroupInfo other) : this() {
+      name_ = other.name_;
       servers_ = other.servers_.Clone();
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public ServerList Clone() {
-      return new ServerList(this);
+    public ServerGroupInfo Clone() {
+      return new ServerGroupInfo(this);
+    }
+
+    /// <summary>Field number for the "name" field.</summary>
+    public const int NameFieldNumber = 1;
+    private string name_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public string Name {
+      get { return name_; }
+      set {
+        name_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
     }
 
     /// <summary>Field number for the "servers" field.</summary>
-    public const int ServersFieldNumber = 1;
+    public const int ServersFieldNumber = 2;
     private static readonly pb::FieldCodec<global::ConnectProto.ServerInfo> _repeated_servers_codec
-        = pb::FieldCodec.ForMessage(10, global::ConnectProto.ServerInfo.Parser);
+        = pb::FieldCodec.ForMessage(18, global::ConnectProto.ServerInfo.Parser);
     private readonly pbc::RepeatedField<global::ConnectProto.ServerInfo> servers_ = new pbc::RepeatedField<global::ConnectProto.ServerInfo>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -607,18 +697,19 @@ namespace ConnectProto {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
-      return Equals(other as ServerList);
+      return Equals(other as ServerGroupInfo);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool Equals(ServerList other) {
+    public bool Equals(ServerGroupInfo other) {
       if (ReferenceEquals(other, null)) {
         return false;
       }
       if (ReferenceEquals(other, this)) {
         return true;
       }
+      if (Name != other.Name) return false;
       if(!servers_.Equals(other.servers_)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -627,6 +718,7 @@ namespace ConnectProto {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
+      if (Name.Length != 0) hash ^= Name.GetHashCode();
       hash ^= servers_.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -646,6 +738,10 @@ namespace ConnectProto {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
+      if (Name.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteString(Name);
+      }
       servers_.WriteTo(output, _repeated_servers_codec);
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
@@ -657,6 +753,10 @@ namespace ConnectProto {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (Name.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteString(Name);
+      }
       servers_.WriteTo(ref output, _repeated_servers_codec);
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
@@ -668,6 +768,9 @@ namespace ConnectProto {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
+      if (Name.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Name);
+      }
       size += servers_.CalculateSize(_repeated_servers_codec);
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -677,9 +780,12 @@ namespace ConnectProto {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(ServerList other) {
+    public void MergeFrom(ServerGroupInfo other) {
       if (other == null) {
         return;
+      }
+      if (other.Name.Length != 0) {
+        Name = other.Name;
       }
       servers_.Add(other.servers_);
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
@@ -702,6 +808,10 @@ namespace ConnectProto {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 10: {
+            Name = input.ReadString();
+            break;
+          }
+          case 18: {
             servers_.AddEntriesFrom(input, _repeated_servers_codec);
             break;
           }
@@ -725,7 +835,198 @@ namespace ConnectProto {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
           case 10: {
+            Name = input.ReadString();
+            break;
+          }
+          case 18: {
             servers_.AddEntriesFrom(ref input, _repeated_servers_codec);
+            break;
+          }
+        }
+      }
+    }
+    #endif
+
+  }
+
+  [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
+  public sealed partial class ServerGroupList : pb::IMessage<ServerGroupList>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
+    private static readonly pb::MessageParser<ServerGroupList> _parser = new pb::MessageParser<ServerGroupList>(() => new ServerGroupList());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pb::MessageParser<ServerGroupList> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::ConnectProto.ConnectReflection.Descriptor.MessageTypes[3]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public ServerGroupList() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public ServerGroupList(ServerGroupList other) : this() {
+      serverGroups_ = other.serverGroups_.Clone();
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public ServerGroupList Clone() {
+      return new ServerGroupList(this);
+    }
+
+    /// <summary>Field number for the "serverGroups" field.</summary>
+    public const int ServerGroupsFieldNumber = 1;
+    private static readonly pb::FieldCodec<global::ConnectProto.ServerGroupInfo> _repeated_serverGroups_codec
+        = pb::FieldCodec.ForMessage(10, global::ConnectProto.ServerGroupInfo.Parser);
+    private readonly pbc::RepeatedField<global::ConnectProto.ServerGroupInfo> serverGroups_ = new pbc::RepeatedField<global::ConnectProto.ServerGroupInfo>();
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public pbc::RepeatedField<global::ConnectProto.ServerGroupInfo> ServerGroups {
+      get { return serverGroups_; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override bool Equals(object other) {
+      return Equals(other as ServerGroupList);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool Equals(ServerGroupList other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if(!serverGroups_.Equals(other.serverGroups_)) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override int GetHashCode() {
+      int hash = 1;
+      hash ^= serverGroups_.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
+      serverGroups_.WriteTo(output, _repeated_serverGroups_codec);
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      serverGroups_.WriteTo(ref output, _repeated_serverGroups_codec);
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int CalculateSize() {
+      int size = 0;
+      size += serverGroups_.CalculateSize(_repeated_serverGroups_codec);
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(ServerGroupList other) {
+      if (other == null) {
+        return;
+      }
+      serverGroups_.Add(other.serverGroups_);
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+      if ((tag & 7) == 4) {
+        // Abort on any end group tag.
+        return;
+      }
+      switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 10: {
+            serverGroups_.AddEntriesFrom(input, _repeated_serverGroups_codec);
+            break;
+          }
+        }
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+      if ((tag & 7) == 4) {
+        // Abort on any end group tag.
+        return;
+      }
+      switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
+            serverGroups_.AddEntriesFrom(ref input, _repeated_serverGroups_codec);
             break;
           }
         }

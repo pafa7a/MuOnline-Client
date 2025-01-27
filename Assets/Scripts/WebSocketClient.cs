@@ -5,15 +5,26 @@ using System.Reflection;
 using UnityEngine;
 using NativeWebSocket;
 using ConnectProto;
+using UnityEngine.SceneManagement;
 
 public class WebSocketClient : MonoBehaviour
 {
 
     [SerializeField]
-    private int _connectServerPort = 44405;
+    public string gameServerIp = "localhost";
+    [SerializeField]
+    public string connectServerIp = "localhost";
+    [SerializeField]
+    public int connectServerPort = 44405;
+    [SerializeField]
+    public int gameServerPort = 0;
+    [SerializeField]
+    public int gameServerId = 0;
+    [SerializeField]
+    public bool isGameServer = false;
     [SerializeField]
     private bool _debugConnection = false;
-    private static WebSocketClient instance;
+    public static WebSocketClient instance;
     private WebSocket websocket;
     private Dictionary<string, List<Type>> messageTypeToHandlerTypesCache = new Dictionary<string, List<Type>>();
 
@@ -49,9 +60,13 @@ public class WebSocketClient : MonoBehaviour
 #endif
     }
 
-    private async void InitializeWebSocket()
+    public async void InitializeWebSocket()
     {
-        websocket = new WebSocket($"ws://localhost:{_connectServerPort}", new Dictionary<string, string>
+        if (websocket != null && websocket.State == WebSocketState.Open)
+        {
+            return;
+        }
+        websocket = new WebSocket($"ws://{(isGameServer ? gameServerIp : connectServerIp)}:{(isGameServer ? gameServerPort : connectServerPort)}", new Dictionary<string, string>
             {
                 {"clientType", Application.platform.ToString()},
                 {"clientVersion", SystemInfo.operatingSystem}
@@ -72,29 +87,32 @@ public class WebSocketClient : MonoBehaviour
             Debug.LogError($"WebSocket error: {e}");
         };
 
-        websocket.OnClose += (e) =>
-        {
-            Debug.Log("WebSocket connection closed.");
-            //@TODO: Handle with reconnect scene and test in WebGL!
-            if (instance != null)
-            {
-                Invoke(nameof(InitializeWebSocket), 5);  // Reconnect after 5 seconds if the instance is still valid
-            }
-        };
-
+        websocket.OnClose += HandleWebSocketClose;
         await websocket.Connect();
     }
 
-    private void Send(byte[] data)
+    private void HandleWebSocketClose(WebSocketCloseCode closeCode)
     {
-        if (_debugConnection)
+        Debug.Log("WebSocket connection closed.");
+        if (instance != null)
+        {
+            Invoke(nameof(InitializeWebSocket), 5);  // Reconnect after 5 seconds if the instance is still valid
+        }
+    }
+    public static void Send(byte[] data)
+    {
+        if (instance == null || instance.websocket == null || instance.websocket.State != WebSocketState.Open)
+        {
+            return;
+        }
+        if (instance._debugConnection)
         {
             // Log the message being sent
             Wrapper wrapper = Wrapper.Parser.ParseFrom(data);
             Debug.Log($"C->S: {wrapper.Type}");
         }
         // Send the message using the websocket instance
-        websocket.Send(data);
+        instance.websocket.Send(data);
     }
 
     private void CacheHandlerTypes()
@@ -149,5 +167,54 @@ public class WebSocketClient : MonoBehaviour
             Debug.Log($"S->C: {wrapper.Type}");
         }
         DispatchMessage(wrapper.Type, wrapper.Payload.ToByteArray());
+    }
+
+    public async void CloseConnection()
+    {
+        if (websocket != null && websocket.State == WebSocketState.Open)
+        {
+            Debug.Log("Closing WebSocket connection intentionally.");
+            await websocket.Close();
+        }
+    }
+
+    public async void ConnectToGameServer(string IP, int port, int id)
+    {
+        // Load the World scene asynchronously
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("World");
+
+        // Wait until the scene is fully loaded
+        while (!asyncLoad.isDone)
+        {
+            await System.Threading.Tasks.Task.Yield();
+        }
+
+        // Proceed with the rest of the logic
+        CloseConnection();
+        gameServerIp = IP;
+        gameServerPort = port;
+        gameServerId = id;
+        isGameServer = true;
+        InitializeWebSocket();
+    }
+
+    public async void ConnectToConnectServer()
+    {
+        // Load the ServerSelect scene asynchronously
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("ServerSelect");
+
+        // Wait until the scene is fully loaded
+        while (!asyncLoad.isDone)
+        {
+            await System.Threading.Tasks.Task.Yield();
+        }
+
+        // Proceed with the rest of the logic
+        CloseConnection();
+        gameServerIp = "";
+        gameServerPort = 0;
+        gameServerId = 0;
+        isGameServer = false;
+        InitializeWebSocket();
     }
 }

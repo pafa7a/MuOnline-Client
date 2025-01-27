@@ -9,7 +9,7 @@ public class InitHandler : IMessageHandler
     {
         Wrapper wrapper = new()
         {
-            Type = "RequestServerList",
+            Type = "RequestServerGroupList",
             Payload = ByteString.Empty
         };
         Send(wrapper.ToByteArray());

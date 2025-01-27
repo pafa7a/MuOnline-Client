@@ -1,8 +1,8 @@
 using System;
 using ConnectProto;
 
-[MessageType("ServerList")]
-public class ServerListHandler : IMessageHandler
+[MessageType("ServerGroupList")]
+public class ServerGroupListHandler : IMessageHandler
 {
     private SelectServerManager _selectServerManager;
 
@@ -14,8 +14,8 @@ public class ServerListHandler : IMessageHandler
         }
         _selectServerManager = SelectServerManager.Instance;
         // Parse the ServerListResponse message
-        ServerList serverListResponse = ServerList.Parser.ParseFrom(message);
-        _selectServerManager.DisplayServersList(serverListResponse.Servers);
+        ServerGroupList serverGroupListResponse = ServerGroupList.Parser.ParseFrom(message);
+        _selectServerManager.DisplayServersList(serverGroupListResponse.ServerGroups);
 
     }
 }
