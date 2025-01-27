@@ -6,6 +6,7 @@ using UnityEngine;
 using NativeWebSocket;
 using ConnectProto;
 using UnityEngine.SceneManagement;
+using System.Threading.Tasks;
 
 public class WebSocketClient : MonoBehaviour
 {
@@ -109,7 +110,8 @@ public class WebSocketClient : MonoBehaviour
         {
             // Log the message being sent
             Wrapper wrapper = Wrapper.Parser.ParseFrom(data);
-            Debug.Log($"C->S: {wrapper.Type}");
+            string direction = instance.isGameServer ? "C->GS" : "C->CS";
+            Debug.Log($"{direction}: {wrapper.Type}");
         }
         // Send the message using the websocket instance
         instance.websocket.Send(data);
@@ -164,12 +166,13 @@ public class WebSocketClient : MonoBehaviour
         Wrapper wrapper = Wrapper.Parser.ParseFrom(bytes);
         if (_debugConnection)
         {
-            Debug.Log($"S->C: {wrapper.Type}");
+            string direction = isGameServer ? "GS->C" : "CS->C";
+            Debug.Log($"{direction}: {wrapper.Type}");
         }
         DispatchMessage(wrapper.Type, wrapper.Payload.ToByteArray());
     }
 
-    public async void CloseConnection()
+    public async Task CloseConnection()
     {
         if (websocket != null && websocket.State == WebSocketState.Open)
         {
@@ -180,17 +183,17 @@ public class WebSocketClient : MonoBehaviour
 
     public async void ConnectToGameServer(string IP, int port, int id)
     {
+        await CloseConnection();
         // Load the World scene asynchronously
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("World");
 
         // Wait until the scene is fully loaded
         while (!asyncLoad.isDone)
         {
-            await System.Threading.Tasks.Task.Yield();
+            await Task.Yield();
         }
 
         // Proceed with the rest of the logic
-        CloseConnection();
         gameServerIp = IP;
         gameServerPort = port;
         gameServerId = id;
@@ -200,17 +203,18 @@ public class WebSocketClient : MonoBehaviour
 
     public async void ConnectToConnectServer()
     {
+        
+        await CloseConnection();
         // Load the ServerSelect scene asynchronously
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("ServerSelect");
 
         // Wait until the scene is fully loaded
         while (!asyncLoad.isDone)
         {
-            await System.Threading.Tasks.Task.Yield();
+            await Task.Yield();
         }
 
         // Proceed with the rest of the logic
-        CloseConnection();
         gameServerIp = "";
         gameServerPort = 0;
         gameServerId = 0;

@@ -27,7 +27,7 @@ namespace ConnectProto {
             "ChpzcmMvbWVzc2FnZXMvY29ubmVjdC5wcm90byIoCgdXcmFwcGVyEgwKBHR5",
             "cGUYASABKAkSDwoHcGF5bG9hZBgCIAEoDCJYCgpTZXJ2ZXJJbmZvEgwKBG5h",
             "bWUYASABKAkSCgoCaXAYAiABKAkSDAoEcG9ydBgDIAEoBRIKCgJpZBgEIAEo",
-            "BRIWCg5sb2FkUGVyY2VudGFnZRgFIAEoAiI9Cg9TZXJ2ZXJHcm91cEluZm8S",
+            "BRIWCg5sb2FkUGVyY2VudGFnZRgFIAEoCSI9Cg9TZXJ2ZXJHcm91cEluZm8S",
             "DAoEbmFtZRgBIAEoCRIcCgdzZXJ2ZXJzGAIgAygLMgsuU2VydmVySW5mbyI5",
             "Cg9TZXJ2ZXJHcm91cExpc3QSJgoMc2VydmVyR3JvdXBzGAEgAygLMhAuU2Vy",
             "dmVyR3JvdXBJbmZvQg+qAgxDb25uZWN0UHJvdG9iBnByb3RvMw=="));
@@ -378,13 +378,13 @@ namespace ConnectProto {
 
     /// <summary>Field number for the "loadPercentage" field.</summary>
     public const int LoadPercentageFieldNumber = 5;
-    private float loadPercentage_;
+    private string loadPercentage_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public float LoadPercentage {
+    public string LoadPercentage {
       get { return loadPercentage_; }
       set {
-        loadPercentage_ = value;
+        loadPercentage_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
     }
 
@@ -407,7 +407,7 @@ namespace ConnectProto {
       if (Ip != other.Ip) return false;
       if (Port != other.Port) return false;
       if (Id != other.Id) return false;
-      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(LoadPercentage, other.LoadPercentage)) return false;
+      if (LoadPercentage != other.LoadPercentage) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -419,7 +419,7 @@ namespace ConnectProto {
       if (Ip.Length != 0) hash ^= Ip.GetHashCode();
       if (Port != 0) hash ^= Port.GetHashCode();
       if (Id != 0) hash ^= Id.GetHashCode();
-      if (LoadPercentage != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(LoadPercentage);
+      if (LoadPercentage.Length != 0) hash ^= LoadPercentage.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -454,9 +454,9 @@ namespace ConnectProto {
         output.WriteRawTag(32);
         output.WriteInt32(Id);
       }
-      if (LoadPercentage != 0F) {
-        output.WriteRawTag(45);
-        output.WriteFloat(LoadPercentage);
+      if (LoadPercentage.Length != 0) {
+        output.WriteRawTag(42);
+        output.WriteString(LoadPercentage);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
@@ -484,9 +484,9 @@ namespace ConnectProto {
         output.WriteRawTag(32);
         output.WriteInt32(Id);
       }
-      if (LoadPercentage != 0F) {
-        output.WriteRawTag(45);
-        output.WriteFloat(LoadPercentage);
+      if (LoadPercentage.Length != 0) {
+        output.WriteRawTag(42);
+        output.WriteString(LoadPercentage);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
@@ -510,8 +510,8 @@ namespace ConnectProto {
       if (Id != 0) {
         size += 1 + pb::CodedOutputStream.ComputeInt32Size(Id);
       }
-      if (LoadPercentage != 0F) {
-        size += 1 + 4;
+      if (LoadPercentage.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(LoadPercentage);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -537,7 +537,7 @@ namespace ConnectProto {
       if (other.Id != 0) {
         Id = other.Id;
       }
-      if (other.LoadPercentage != 0F) {
+      if (other.LoadPercentage.Length != 0) {
         LoadPercentage = other.LoadPercentage;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
@@ -575,8 +575,8 @@ namespace ConnectProto {
             Id = input.ReadInt32();
             break;
           }
-          case 45: {
-            LoadPercentage = input.ReadFloat();
+          case 42: {
+            LoadPercentage = input.ReadString();
             break;
           }
         }
@@ -614,8 +614,8 @@ namespace ConnectProto {
             Id = input.ReadInt32();
             break;
           }
-          case 45: {
-            LoadPercentage = input.ReadFloat();
+          case 42: {
+            LoadPercentage = input.ReadString();
             break;
           }
         }

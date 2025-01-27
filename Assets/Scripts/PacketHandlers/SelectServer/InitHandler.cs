@@ -7,6 +7,11 @@ public class InitHandler : IMessageHandler
 {
     public void HandleMessage(byte[] message, Action<byte[]> Send)
     {
+        if (WebSocketClient.instance.isGameServer)
+        {
+            //@TODO: Implement game server init handler.
+            return;
+        }
         Wrapper wrapper = new()
         {
             Type = "RequestServerGroupList",
