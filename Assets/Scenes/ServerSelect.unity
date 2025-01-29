@@ -527,8 +527,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13969d9781a7c7d4384f819e08af2a71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameServerIp: 192.168.0.169
-  connectServerIp: 192.168.0.169
+  gameServerIp: 127.0.0.1
+  connectServerIp: 127.0.0.1
   connectServerPort: 44405
   gameServerPort: 0
   gameServerId: 0
