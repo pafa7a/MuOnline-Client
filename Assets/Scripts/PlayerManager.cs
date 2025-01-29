@@ -1,11 +1,16 @@
+using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using UnityEngine.AI;
 
 public class PlayerManager : MonoBehaviour
 {
     public static PlayerManager Instance;
-    private CanvasManager _canvas;
-    private bool _shouldDisplayPlayerCoordinates = false;
+    public GameObject playerPrefab; // Prefab for players
+    public string ownPlayerId; // ID of the local player
+    public Dictionary<string, GameObject> players = new(); // All players in the scene
+
+    private Transform playersParent; // Parent object for all players
 
     void Awake()
     {
@@ -16,37 +21,90 @@ public class PlayerManager : MonoBehaviour
         else
         {
             Destroy(gameObject);
+            return;
         }
 
-        // Display coordinates only in World scene.
-        Scene scene = SceneManager.GetActiveScene();
-        _canvas = CanvasManager.Instance;
-        if (_canvas && scene != null && scene.name == "World")
-        {
-            _shouldDisplayPlayerCoordinates = true;
-        }
-
+        // Create the "Players" parent object dynamically
+        GameObject parent = new("Players");
+        playersParent = parent.transform;
     }
 
-    void Update()
+    public void SpawnPlayer(string playerId, Vector3 position, Quaternion rotation, bool isLocal = false)
     {
-        DisplayPlayerCoordinatesInCanvas();
+        if (players.ContainsKey(playerId))
+        {
+            Debug.LogWarning($"Player {playerId} is already spawned.");
+            return;
+        }
+
+        GameObject player = Instantiate(playerPrefab, position, rotation, playersParent);
+        player.name = playerId;
+        player.GetComponentInChildren<TextMeshPro>().text = playerId;
+
+        NavMeshAgent agent = player.GetComponent<NavMeshAgent>();
+        if (agent != null)
+        {
+            agent.avoidancePriority = isLocal ? 50 : 0;
+        }
+
+        players[playerId] = player;
+
+        if (isLocal)
+        {
+            ownPlayerId = playerId;
+        }
+
+        Debug.Log($"Spawned {(isLocal ? "local" : "other")} player with ID: {playerId}");
     }
 
-    void OnDestroy()
+    public void UpdatePlayer(string playerId, Vector3 position)
     {
-        if (_canvas != null)
+        if (!players.ContainsKey(playerId))
         {
-            _canvas.PlayerCoordinatesObject.gameObject.SetActive(false);
+            Debug.LogWarning($"Player {playerId} not found. Cannot update.");
+            return;
+        }
+
+        GameObject player = players[playerId];
+        player.transform.SetPositionAndRotation(position, player.transform.rotation);
+        Debug.Log($"Updated player with ID: {playerId} to position {position} and rotation {player.transform.rotation}");
+    }
+
+    public void MovePlayer(string playerId, Vector3 position)
+    {
+        if (!players.ContainsKey(playerId))
+        {
+            return;
+        }
+
+        GameObject player = players[playerId];
+
+        // Get the NavMeshAgent component attached to the player
+        NavMeshAgent agent = player.GetComponent<NavMeshAgent>();
+        if (agent == null)
+        {
+            return;
+        }
+        agent.SetDestination(position);
+
+        // Clear the path if the agent has reached its destination
+        if (!agent.pathPending && agent.remainingDistance == 0f)
+        {
+            agent.ResetPath();
         }
     }
 
-    void DisplayPlayerCoordinatesInCanvas()
+    public void RemovePlayer(string playerId)
     {
-        if (_shouldDisplayPlayerCoordinates)
+        if (!players.ContainsKey(playerId))
         {
-            _canvas.PlayerCoordinatesObject.gameObject.SetActive(_canvas.PlayerCoordinatesDisplay);
-            _canvas.PlayerCoordinatesObject.text = $"Player: X: {gameObject.transform.position.x:F0}, Y: {gameObject.transform.position.z:F0}";
+            Debug.LogWarning($"Player {playerId} not found. Cannot remove.");
+            return;
         }
+
+        Destroy(players[playerId]);
+        players.Remove(playerId);
+
+        Debug.Log($"Removed player with ID: {playerId}");
     }
 }

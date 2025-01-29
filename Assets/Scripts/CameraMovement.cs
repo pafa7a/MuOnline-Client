@@ -18,6 +18,21 @@ public class CameraMovement : MonoBehaviour
 
     void LateUpdate()
     {
+        // Find and follow the local player
+        if (PlayerManager.Instance != null && PlayerManager.Instance.ownPlayerId != null)
+        {
+            GameObject localPlayer = GameObject.Find(PlayerManager.Instance.ownPlayerId);
+            if (localPlayer != null)
+            {
+                player = localPlayer.transform;
+            }
+        }
+
+        if (player == null)
+        {
+            return;
+        }
+
         // Adjust the offset magnitude based on scroll input
         float scroll = Input.GetAxis("Mouse ScrollWheel");
         offset = offset.normalized * Mathf.Clamp(offset.magnitude - scroll * scrollSensitivity, minZoom, maxZoom);
