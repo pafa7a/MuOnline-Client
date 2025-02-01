@@ -90,7 +90,7 @@ public class SelectServerManager : MonoBehaviour
 
                         if (serverLoadImage != null)
                         {
-                            serverLoadImage.fillAmount = float.Parse(server.LoadPercentage);
+                            serverLoadImage.fillAmount = 0.5f;
 
                         }
 
