@@ -1,4 +1,5 @@
 using ConnectProto;
+using Google.Protobuf;
 using Google.Protobuf.Collections;
 using TMPro;
 using UnityEngine;
@@ -14,8 +15,10 @@ public class SelectServerManager : MonoBehaviour
     private string _serverButtonPrefabPath = "Prefabs/ServerButton";
     private string _serverListPrefabPath = "Prefabs/ServerList";
     private string _serverPrefabPath = "Prefabs/Server";
+    private string _loginWrapperPrefabPath = "Prefabs/LoginWrapper";
     private GameObject _serverListGroup;
     private GameObject _serverList;
+    private GameObject _loginWrapper;
     void Awake()
     {
         if (SceneManager.GetActiveScene().name == "ServerSelect")
@@ -27,6 +30,7 @@ public class SelectServerManager : MonoBehaviour
         {
             DestroyImmediate(_serverListGroup);
             DestroyImmediate(_serverList);
+            DestroyImmediate(_loginWrapper);
         }
     }
 
@@ -41,10 +45,11 @@ public class SelectServerManager : MonoBehaviour
         {
             GameObject ServerListPrefab = Resources.Load<GameObject>(_serverListPrefabPath);
             _serverList = Instantiate(ServerListPrefab, Vector3.zero, Quaternion.identity, Canvas.transform);
+            RectTransform prefabTransform = ServerListPrefab.GetComponent<RectTransform>();
             RectTransform ServerListRectTransform = _serverList.GetComponent<RectTransform>();
-            ServerListRectTransform.offsetMin = Vector2.zero;
-            ServerListRectTransform.offsetMax = Vector2.zero;
-            ServerListRectTransform.sizeDelta = new Vector2(193, 208);
+            ServerListRectTransform.offsetMin = prefabTransform.offsetMin;
+            ServerListRectTransform.offsetMax = prefabTransform.offsetMax;
+            ServerListRectTransform.sizeDelta = prefabTransform.sizeDelta;
         }
         // Delete all children of the server list.
         ClearServerList();
@@ -90,7 +95,9 @@ public class SelectServerManager : MonoBehaviour
 
                         if (serverLoadImage != null)
                         {
-                            serverLoadImage.fillAmount = 0.5f;
+                            float serverLoad = 0f;
+                            float.TryParse(server.LoadPercentage, out serverLoad);
+                            serverLoadImage.fillAmount = serverLoad;
 
                         }
 
@@ -99,7 +106,33 @@ public class SelectServerManager : MonoBehaviour
                         {
                             serverButton.onClick.AddListener(() =>
                             {
-                                WebSocketClient.instance.ConnectToGameServer(server.Ip, server.Port, server.Id);
+                                DestroyImmediate(_serverListGroup);
+                                DestroyImmediate(_serverList);
+                                GameObject LoginWrapperPrefab = Resources.Load<GameObject>(_loginWrapperPrefabPath);
+                                _loginWrapper = Instantiate(LoginWrapperPrefab, Vector3.zero, Quaternion.identity, Canvas.transform);
+
+                                RectTransform LoginWrapperRectTransform = _loginWrapper.GetComponent<RectTransform>();
+                                RectTransform prefabTransform = LoginWrapperPrefab.GetComponent<RectTransform>();
+                                LoginWrapperRectTransform.offsetMin = prefabTransform.offsetMin;
+                                LoginWrapperRectTransform.offsetMax = prefabTransform.offsetMax;
+                                LoginWrapperRectTransform.sizeDelta = prefabTransform.sizeDelta;
+
+
+                                // Find buttons inside the instantiated prefab and add their click listeners.
+                                Button okButton = _loginWrapper.transform.Find("ButtonsWrapper/OkButton")?.GetComponent<Button>();
+                                Button cancelButton = _loginWrapper.transform.Find("ButtonsWrapper/CancelButton")?.GetComponent<Button>();
+
+                                if (okButton != null)
+                                {
+                                    okButton.onClick.RemoveAllListeners();
+                                    okButton.onClick.AddListener(() => OkButtonPressed(server));
+                                }
+
+                                if (cancelButton != null)
+                                {
+                                    cancelButton.onClick.RemoveAllListeners();
+                                    cancelButton.onClick.AddListener(CancelButtonPressed);
+                                }
                             });
 
                             EventTrigger trigger = serverButton.gameObject.AddComponent<EventTrigger>();
@@ -142,5 +175,52 @@ public class SelectServerManager : MonoBehaviour
         Destroy(gameObject);
         DestroyImmediate(_serverListGroup);
         DestroyImmediate(_serverList);
+        DestroyImmediate(_loginWrapper);
+    }
+
+    public void OkButtonPressed(ServerInfo server)
+    {
+        if (server == null)
+        {
+            Debug.LogError("❌ server is null!");
+            return;
+        }
+        if (_loginWrapper == null)
+        {
+            Debug.LogError("❌ _loginWrapper is null!");
+            return;
+        }
+
+        // Find the username and password input fields inside the login prefab
+        TMP_InputField usernameInput = _loginWrapper.transform.Find("InputsWrapper/Username")?.GetComponent<TMP_InputField>();
+        TMP_InputField passwordInput = _loginWrapper.transform.Find("InputsWrapper/Password")?.GetComponent<TMP_InputField>();
+
+        if (usernameInput == null || passwordInput == null)
+        {
+            Debug.LogError("❌ Username or Password input field not found in LoginWrapper!");
+            return;
+        }
+
+        // Get the values
+        string username = usernameInput.text;
+        string password = passwordInput.text;
+        Debug.Log(server);
+
+        // Now you can send these values to your WebSocketClient or authentication system
+        // WebSocketClient.instance.SendLoginRequest(username, password);
+        WebSocketClient.instance.ConnectToGameServer(server.Ip, server.Port, server.Id);
+    }
+
+    public void CancelButtonPressed()
+    {
+        DestroyImmediate(_loginWrapper);
+
+        // Request again for the server list.
+        Wrapper wrapper = new()
+        {
+            Type = "RequestServerGroupList",
+            Payload = ByteString.Empty
+        };
+        WebSocketClient.Send(wrapper.ToByteArray());
     }
 }
