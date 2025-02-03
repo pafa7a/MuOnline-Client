@@ -8,6 +8,19 @@ public class InputManager : MonoBehaviour
 {
     public List<Selectable> inputFields;
     private int currentInputIndex = 0;
+    public static InputManager instance;
+
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
 
     void Start()
     {
@@ -35,12 +48,12 @@ public class InputManager : MonoBehaviour
         }
     }
 
-    void SelectInputField(int index)
+    public static void SelectInputField(int index)
     {
-        if (index < 0 || index >= inputFields.Count) return;
+        if (index < 0 || index >= instance.inputFields.Count) return;
 
-        EventSystem.current.SetSelectedGameObject(inputFields[index].gameObject);
-        TMP_InputField inputField = inputFields[index].GetComponent<TMP_InputField>();
+        EventSystem.current.SetSelectedGameObject(instance.inputFields[index].gameObject);
+        TMP_InputField inputField = instance.inputFields[index].GetComponent<TMP_InputField>();
         
         if (inputField != null)
         {
@@ -48,6 +61,6 @@ public class InputManager : MonoBehaviour
             inputField.caretPosition = inputField.text.Length;
         }
 
-        currentInputIndex = index; // Ensure index is updated correctly
+        instance.currentInputIndex = index; // Ensure index is updated correctly
     }
 }

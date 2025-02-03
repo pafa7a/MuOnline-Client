@@ -14,6 +14,5 @@ public class PlayerJoinedHandler : IMessageHandler
         PlayerJoined playerJoined = PlayerJoined.Parser.ParseFrom(message);
         PlayerPositionData newPlayerPosition = playerJoined.NewPlayer;
         PlayerManager.Instance.SpawnPlayer(newPlayerPosition.Id, new Vector3(newPlayerPosition.X, newPlayerPosition.Y, newPlayerPosition.Z), Quaternion.Euler(newPlayerPosition.RotationX, newPlayerPosition.RotationY, newPlayerPosition.RotationZ), false);
-
     }
 }

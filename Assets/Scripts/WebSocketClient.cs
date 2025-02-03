@@ -5,7 +5,6 @@ using System.Reflection;
 using UnityEngine;
 using NativeWebSocket;
 using ConnectProto;
-using UnityEngine.SceneManagement;
 using System.Threading.Tasks;
 
 public class WebSocketClient : MonoBehaviour
@@ -21,6 +20,10 @@ public class WebSocketClient : MonoBehaviour
     public int gameServerPort = 0;
     [SerializeField]
     public int gameServerId = 0;
+    [SerializeField]
+    public string Version;
+    [SerializeField]
+    public string Serial;
     [SerializeField]
     public bool isGameServer = false;
     [SerializeField]
@@ -184,14 +187,14 @@ public class WebSocketClient : MonoBehaviour
     public async void ConnectToGameServer(string IP, int port, int id)
     {
         await CloseConnection();
-        // Load the World scene asynchronously
-        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("World");
+        // // Load the World scene asynchronously
+        // AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("World");
 
-        // Wait until the scene is fully loaded
-        while (!asyncLoad.isDone)
-        {
-            await Task.Yield();
-        }
+        // // Wait until the scene is fully loaded
+        // while (!asyncLoad.isDone)
+        // {
+        //     await Task.Yield();
+        // }
 
         // Proceed with the rest of the logic
         gameServerIp = IP;
@@ -201,18 +204,18 @@ public class WebSocketClient : MonoBehaviour
         InitializeWebSocket();
     }
 
-    public async void ConnectToConnectServer()
+    public async Task ConnectToConnectServer()
     {
         
         await CloseConnection();
-        // Load the ServerSelect scene asynchronously
-        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("ServerSelect");
+        // // Load the ServerSelect scene asynchronously
+        // AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("ServerSelect");
 
-        // Wait until the scene is fully loaded
-        while (!asyncLoad.isDone)
-        {
-            await Task.Yield();
-        }
+        // // Wait until the scene is fully loaded
+        // while (!asyncLoad.isDone)
+        // {
+        //     await Task.Yield();
+        // }
 
         // Proceed with the rest of the logic
         gameServerIp = "";

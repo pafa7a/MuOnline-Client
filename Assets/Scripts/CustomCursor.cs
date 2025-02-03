@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -37,10 +38,10 @@ public class CursorManager : MonoBehaviour
         hoverTextures = ConvertSpritesToTextures(hoverCursorFrames);
     }
 
-    void Update()
+    async Task UpdateAsync()
     {
         HandleRaycast();
-        HandleClick();
+        await HandleClickAsync();
     }
 
     private void HandleRaycast()
@@ -58,7 +59,7 @@ public class CursorManager : MonoBehaviour
         }
     }
 
-    private void HandleClick()
+    private async Task HandleClickAsync()
     {
         // Change cursor only if it's not already hovering.
         if (!isHovering) {
@@ -74,7 +75,7 @@ public class CursorManager : MonoBehaviour
                 WebSocketClient.instance.ConnectToGameServer("localhost", 55901, 1);
             }
             if (hit.collider.GetComponent<TalkCursorMarker>().name == "Cube") {
-                WebSocketClient.instance.ConnectToConnectServer();
+                await WebSocketClient.instance.ConnectToConnectServer();
             }
         }
         }

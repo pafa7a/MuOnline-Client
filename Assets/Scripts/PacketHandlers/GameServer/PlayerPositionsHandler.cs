@@ -18,6 +18,5 @@ public class PlayerPositionsHandler : IMessageHandler
         {
             PlayerManager.Instance.SpawnPlayer(otherPlayer.Id, new Vector3(otherPlayer.X, otherPlayer.Y, otherPlayer.Z), Quaternion.Euler(otherPlayer.RotationX, otherPlayer.RotationY, otherPlayer.RotationZ), false);
         }
-
     }
 }
