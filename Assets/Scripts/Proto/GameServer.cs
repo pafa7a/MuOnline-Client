@@ -38,12 +38,12 @@ namespace GameServerProto {
             "ASgCIlMKDExvZ2luUmVxdWVzdBIQCgh1c2VybmFtZRgBIAEoCRIQCghwYXNz",
             "d29yZBgCIAEoCRIPCgd2ZXJzaW9uGAMgASgJEg4KBnNlcmlhbBgEIAEoCSI5",
             "Cg1Mb2dpblJlc3BvbnNlEigKDHJlc3BvbnNlQ29kZRgBIAEoDjISLkxvZ2lu",
-            "UmVzcG9uc2VFbnVtKsYBChFMb2dpblJlc3BvbnNlRW51bRIMCghMT0dJTl9P",
+            "UmVzcG9uc2VFbnVtKtgBChFMb2dpblJlc3BvbnNlRW51bRIMCghMT0dJTl9P",
             "SxAAEh0KGUxPR0lOX0lOVkFMSURfQ1JFREVOVElBTFMQARIZChVMT0dJTl9J",
             "TlZBTElEX1ZFUlNJT04QAhIYChRMT0dJTl9JTlZBTElEX1NFUklBTBADEhUK",
             "EUxPR0lOX1NFUlZFUl9GVUxMEAQSGwoXTE9HSU5fQUxSRUFEWV9DT05ORUNU",
-            "RUQQBRIbChdMT0dJTl9UT09fTUFOWV9BVFRFTVBUUxAGQhKqAg9HYW1lU2Vy",
-            "dmVyUHJvdG9iBnByb3RvMw=="));
+            "RUQQBRIbChdMT0dJTl9UT09fTUFOWV9BVFRFTVBUUxAGEhAKDExPR0lOX0JB",
+            "Tk5FRBAHQhKqAg9HYW1lU2VydmVyUHJvdG9iBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::GameServerProto.LoginResponseEnum), }, null, new pbr::GeneratedClrTypeInfo[] {
@@ -70,6 +70,7 @@ namespace GameServerProto {
     [pbr::OriginalName("LOGIN_SERVER_FULL")] LoginServerFull = 4,
     [pbr::OriginalName("LOGIN_ALREADY_CONNECTED")] LoginAlreadyConnected = 5,
     [pbr::OriginalName("LOGIN_TOO_MANY_ATTEMPTS")] LoginTooManyAttempts = 6,
+    [pbr::OriginalName("LOGIN_BANNED")] LoginBanned = 7,
   }
 
   #endregion

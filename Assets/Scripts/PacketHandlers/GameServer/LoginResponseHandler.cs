@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using System;
 using GameServerProto;
 using UnityEngine;
@@ -5,6 +6,8 @@ using UnityEngine;
 [MessageType("LoginResponse")]
 public class LoginResponseHandler : IMessageHandler
 {
+    [DllImport("__Internal")]
+    private static extern void ClosePage();
     public void HandleMessage(byte[] message, Action<byte[]> sendMessage)
     {
         LoginResponse loginResponse = LoginResponse.Parser.ParseFrom(message);
@@ -37,7 +40,15 @@ public class LoginResponseHandler : IMessageHandler
                 break;
             case LoginResponseEnum.LoginTooManyAttempts:
                 popUpText = "Too many failed attempts";
-                onOk = () => Application.Quit();
+                Action quitAction = () =>
+                {
+#if UNITY_WEBGL && !UNITY_EDITOR
+                    ClosePage();
+#else
+                    Application.Quit();
+#endif
+                };
+                onOk = quitAction;
                 break;
         }
         PopUpMessage.Show(popUpText, PopUpMessage.ButtonsEnum.OK, onOk);
