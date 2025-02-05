@@ -7,20 +7,7 @@ using System.Collections.Generic;
 public class InputManager : MonoBehaviour
 {
     public List<Selectable> inputFields;
-    private int currentInputIndex = 0;
-    public static InputManager instance;
-
-    private void Awake()
-    {
-        if (instance == null)
-        {
-            instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-    }
+    public int currentInputIndex = 0;
 
     void Start()
     {
@@ -48,12 +35,12 @@ public class InputManager : MonoBehaviour
         }
     }
 
-    public static void SelectInputField(int index)
+    public void SelectInputField(int index)
     {
-        if (index < 0 || index >= instance.inputFields.Count) return;
+        if (index < 0 || index >= inputFields.Count) return;
 
-        EventSystem.current.SetSelectedGameObject(instance.inputFields[index].gameObject);
-        TMP_InputField inputField = instance.inputFields[index].GetComponent<TMP_InputField>();
+        EventSystem.current.SetSelectedGameObject(inputFields[index].gameObject);
+        TMP_InputField inputField = inputFields[index].GetComponent<TMP_InputField>();
         
         if (inputField != null)
         {
@@ -61,6 +48,6 @@ public class InputManager : MonoBehaviour
             inputField.caretPosition = inputField.text.Length;
         }
 
-        instance.currentInputIndex = index; // Ensure index is updated correctly
+        currentInputIndex = index; // Ensure index is updated correctly
     }
 }

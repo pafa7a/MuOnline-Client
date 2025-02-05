@@ -18,9 +18,11 @@ public class SelectServerManager : MonoBehaviour
     private string _serverListPrefabPath = "Prefabs/ServerList";
     private string _serverPrefabPath = "Prefabs/Server";
     private string _loginWrapperPrefabPath = "Prefabs/LoginWrapper";
+    private string _registerWrapperPrefabPath = "Prefabs/RegisterWrapper";
     private GameObject _serverListGroup;
     private GameObject _serverList;
     private GameObject _loginWrapper;
+    private GameObject _registerWrapper;
 
     void Awake()
     {
@@ -34,20 +36,36 @@ public class SelectServerManager : MonoBehaviour
             DestroyImmediate(_serverListGroup);
             DestroyImmediate(_serverList);
             DestroyImmediate(_loginWrapper);
+            DestroyImmediate(_registerWrapper);
         }
     }
 
     void Update()
     {
-        if (_loginWrapper == null || PopUpMessage.IsActive) return;
+        if (PopUpMessage.IsActive) return;
 
-        if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
+        if (_loginWrapper != null && _loginWrapper.activeSelf)
         {
-            OkButtonPressed();
+            if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
+            {
+                OkButtonPressed();
+            }
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                _ = CancelButtonPressed();
+            }
         }
-        if (Input.GetKeyDown(KeyCode.Escape))
+
+        if (_registerWrapper != null && _registerWrapper.activeSelf)
         {
-            _ = CancelButtonPressed();
+            if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
+            {
+                OkButtonRegisterPressed();
+            }
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                CancelButtonRegisterPressed();
+            }
         }
     }
 
@@ -138,6 +156,7 @@ public class SelectServerManager : MonoBehaviour
 
                                 // Find buttons inside the instantiated prefab and add their click listeners.
                                 Button okButton = _loginWrapper.transform.Find("ButtonsWrapper/OkButton")?.GetComponent<Button>();
+                                Button createlButton = _loginWrapper.transform.Find("ButtonsWrapper/CreateButton")?.GetComponent<Button>();
                                 Button cancelButton = _loginWrapper.transform.Find("ButtonsWrapper/CancelButton")?.GetComponent<Button>();
 
                                 if (okButton != null)
@@ -147,6 +166,12 @@ public class SelectServerManager : MonoBehaviour
 
                                     // Ensure the UI system sets focus on the OK button
                                     EventSystem.current.SetSelectedGameObject(okButton.gameObject);
+                                }
+
+                                if (createlButton != null)
+                                {
+                                    createlButton.onClick.RemoveAllListeners();
+                                    createlButton.onClick.AddListener(() => CreateButtonPressed());
                                 }
 
                                 if (cancelButton != null)
@@ -199,12 +224,12 @@ public class SelectServerManager : MonoBehaviour
         string password = passwordInput.text;
         if (string.IsNullOrEmpty(username))
         {
-            PopUpMessage.Show("Enter your account name", PopUpMessage.ButtonsEnum.OK, () => InputManager.SelectInputField(0));
+            PopUpMessage.Show("Enter your account name", PopUpMessage.ButtonsEnum.OK, () => _loginWrapper.GetComponent<InputManager>().SelectInputField(0));
             return;
         }
         if (string.IsNullOrEmpty(password))
         {
-            PopUpMessage.Show("Enter your password", PopUpMessage.ButtonsEnum.OK, () => InputManager.SelectInputField(1));
+            PopUpMessage.Show("Enter your password", PopUpMessage.ButtonsEnum.OK, () => _loginWrapper.GetComponent<InputManager>().SelectInputField(1));
             return;
         }
         SendLoginRequest();
@@ -214,6 +239,106 @@ public class SelectServerManager : MonoBehaviour
     {
         DestroyImmediate(_loginWrapper);
         await WebSocketClient.instance.ConnectToConnectServer();
+    }
+
+
+    public void CreateButtonPressed()
+    {
+        _loginWrapper.SetActive(false);
+        
+        TMP_InputField loginUsernameInput = _loginWrapper.transform.Find("InputsWrapper/Username")?.GetComponent<TMP_InputField>();
+        TMP_InputField loginPasswordInput = _loginWrapper.transform.Find("InputsWrapper/Password")?.GetComponent<TMP_InputField>();
+
+        loginUsernameInput.text = "";
+        loginPasswordInput.text = "";
+
+        GameObject RegisterWrapperPrefab = Resources.Load<GameObject>(_registerWrapperPrefabPath);
+        // Set the server name.
+        _registerWrapper = Instantiate(RegisterWrapperPrefab, Vector3.zero, Quaternion.identity, Canvas.transform);
+
+        RectTransform RegisterWrapperRectTransform = _registerWrapper.GetComponent<RectTransform>();
+        RectTransform prefabTransform = RegisterWrapperPrefab.GetComponent<RectTransform>();
+        RegisterWrapperRectTransform.offsetMin = prefabTransform.offsetMin;
+        RegisterWrapperRectTransform.offsetMax = prefabTransform.offsetMax;
+        RegisterWrapperRectTransform.sizeDelta = prefabTransform.sizeDelta;
+
+        Button okButton = _registerWrapper.transform.Find("ButtonsWrapper/OkButton")?.GetComponent<Button>();
+        Button cancelButton = _registerWrapper.transform.Find("ButtonsWrapper/CancelButton")?.GetComponent<Button>();
+
+        if (okButton != null)
+        {
+            okButton.onClick.RemoveAllListeners();
+            okButton.onClick.AddListener(() => OkButtonRegisterPressed());
+
+            // Ensure the UI system sets focus on the OK button
+            EventSystem.current.SetSelectedGameObject(okButton.gameObject);
+        }
+
+        if (cancelButton != null)
+        {
+            cancelButton.onClick.RemoveAllListeners();
+            cancelButton.onClick.AddListener(() => CancelButtonRegisterPressed());
+        }
+    }
+
+
+    public void OkButtonRegisterPressed()
+    {
+        if (_registerWrapper == null)
+        {
+            Debug.LogError("❌ _registerWrapper is null!");
+            return;
+        }
+
+        TMP_InputField registerUsernameInput = _registerWrapper.transform.Find("InputsWrapper/Username")?.GetComponent<TMP_InputField>();
+        TMP_InputField registerEmailInput = _registerWrapper.transform.Find("InputsWrapper/Email")?.GetComponent<TMP_InputField>();
+        TMP_InputField registerPasswordInput = _registerWrapper.transform.Find("InputsWrapper/Password")?.GetComponent<TMP_InputField>();
+        TMP_InputField registerRepeatPasswordInput = _registerWrapper.transform.Find("InputsWrapper/RepeatPassword")?.GetComponent<TMP_InputField>();
+
+        if (registerUsernameInput == null || registerPasswordInput == null || registerEmailInput == null || registerRepeatPasswordInput == null)
+        {
+            Debug.LogError("❌ Username or Password or Email or RepeatPassword input field not found in LoginWrapper!");
+            return;
+        }
+
+        string username = registerUsernameInput.text;
+        string email = registerEmailInput.text;
+        string password = registerPasswordInput.text;
+        string repeatPassword = registerRepeatPasswordInput.text;
+        if (string.IsNullOrEmpty(username))
+        {
+            PopUpMessage.Show("Enter your account name", PopUpMessage.ButtonsEnum.OK, () => _registerWrapper.GetComponent<InputManager>().SelectInputField(0));
+            return;
+        }
+        if (string.IsNullOrEmpty(email))
+        {
+            PopUpMessage.Show("Enter your email", PopUpMessage.ButtonsEnum.OK, () => _registerWrapper.GetComponent<InputManager>().SelectInputField(1));
+            return;
+        }
+        if (string.IsNullOrEmpty(password))
+        {
+            PopUpMessage.Show("Enter your password", PopUpMessage.ButtonsEnum.OK, () => _registerWrapper.GetComponent<InputManager>().SelectInputField(2));
+            return;
+        }
+        if (string.IsNullOrEmpty(repeatPassword))
+        {
+            PopUpMessage.Show("Repeat your password", PopUpMessage.ButtonsEnum.OK, () => _registerWrapper.GetComponent<InputManager>().SelectInputField(3));
+            return;
+        }
+        if (password != repeatPassword)
+        {
+            PopUpMessage.Show("Passwords do not match", PopUpMessage.ButtonsEnum.OK, () => _registerWrapper.GetComponent<InputManager>().SelectInputField(2));
+            return;
+        }
+        SendLoginRequest();
+    }
+
+
+    public void CancelButtonRegisterPressed()
+    {
+        DestroyImmediate(_registerWrapper);
+        _loginWrapper.SetActive(true);
+        _loginWrapper.GetComponent<InputManager>().SelectInputField(0);
     }
 
     private void SendLoginRequest()
