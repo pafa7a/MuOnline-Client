@@ -2,6 +2,8 @@ using System.Runtime.InteropServices;
 using System;
 using GameServerProto;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using Google.Protobuf;
 
 [MessageType("LoginResponse")]
 public class LoginResponseHandler : IMessageHandler
@@ -14,7 +16,13 @@ public class LoginResponseHandler : IMessageHandler
         string popUpText = "";
         if (loginResponse.ResponseCode == LoginResponseEnum.LoginOk)
         {
-            //@TODO: Character select.
+            SceneManager.LoadScene("World");
+            Wrapper wrapper = new()
+            {
+                Type = "WorldEnter",
+                Payload = ByteString.Empty,
+            };
+            WebSocketClient.Send(wrapper.ToByteArray());
             return;
         }
         Action onOk = null;
@@ -22,6 +30,7 @@ public class LoginResponseHandler : IMessageHandler
         {
             case LoginResponseEnum.LoginInvalidCredentials:
                 popUpText = "Invalid credentials";
+                onOk = () => SelectServerManager.Instance._loginWrapper.GetComponent<InputManager>().Init();
                 break;
             case LoginResponseEnum.LoginInvalidVersion:
                 popUpText = "Invalid version";
@@ -37,6 +46,7 @@ public class LoginResponseHandler : IMessageHandler
                 break;
             case LoginResponseEnum.LoginAlreadyConnected:
                 popUpText = "This account is already connected";
+                onOk = () => SelectServerManager.Instance._loginWrapper.GetComponent<InputManager>().Init();
                 break;
             case LoginResponseEnum.LoginTooManyAttempts:
                 popUpText = "Too many failed attempts";

@@ -206,16 +206,7 @@ public class WebSocketClient : MonoBehaviour
 
     public async Task ConnectToConnectServer()
     {
-        
         await CloseConnection();
-        // // Load the ServerSelect scene asynchronously
-        // AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("ServerSelect");
-
-        // // Wait until the scene is fully loaded
-        // while (!asyncLoad.isDone)
-        // {
-        //     await Task.Yield();
-        // }
 
         // Proceed with the rest of the logic
         gameServerIp = "";

@@ -1630,7 +1630,7 @@ MonoBehaviour:
   m_CharacterValidation: 7
   m_RegexValue: 
   m_GlobalPointSize: 14
-  m_CharacterLimit: 30
+  m_CharacterLimit: 50
   m_OnEndEdit:
     m_PersistentCalls:
       m_Calls: []

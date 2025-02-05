@@ -21,8 +21,8 @@ public class SelectServerManager : MonoBehaviour
     private string _registerWrapperPrefabPath = "Prefabs/RegisterWrapper";
     private GameObject _serverListGroup;
     private GameObject _serverList;
-    private GameObject _loginWrapper;
-    private GameObject _registerWrapper;
+    public GameObject _loginWrapper;
+    public GameObject _registerWrapper;
 
     void Awake()
     {
@@ -245,16 +245,18 @@ public class SelectServerManager : MonoBehaviour
     public void CreateButtonPressed()
     {
         _loginWrapper.SetActive(false);
-        
+
         TMP_InputField loginUsernameInput = _loginWrapper.transform.Find("InputsWrapper/Username")?.GetComponent<TMP_InputField>();
         TMP_InputField loginPasswordInput = _loginWrapper.transform.Find("InputsWrapper/Password")?.GetComponent<TMP_InputField>();
-
-        loginUsernameInput.text = "";
-        loginPasswordInput.text = "";
 
         GameObject RegisterWrapperPrefab = Resources.Load<GameObject>(_registerWrapperPrefabPath);
         // Set the server name.
         _registerWrapper = Instantiate(RegisterWrapperPrefab, Vector3.zero, Quaternion.identity, Canvas.transform);
+        TMP_InputField registerUsernameInput = _registerWrapper.transform.Find("InputsWrapper/Username")?.GetComponent<TMP_InputField>();
+
+        registerUsernameInput.text = loginUsernameInput.text;
+        loginUsernameInput.text = "";
+        loginPasswordInput.text = "";
 
         RectTransform RegisterWrapperRectTransform = _registerWrapper.GetComponent<RectTransform>();
         RectTransform prefabTransform = RegisterWrapperPrefab.GetComponent<RectTransform>();
@@ -330,15 +332,43 @@ public class SelectServerManager : MonoBehaviour
             PopUpMessage.Show("Passwords do not match", PopUpMessage.ButtonsEnum.OK, () => _registerWrapper.GetComponent<InputManager>().SelectInputField(2));
             return;
         }
-        SendLoginRequest();
+        SendRegisterRequest();
     }
 
+    private void SendRegisterRequest()
+    {
+        TMP_InputField registerUsernameInput = _registerWrapper.transform.Find("InputsWrapper/Username")?.GetComponent<TMP_InputField>();
+        TMP_InputField registerEmailInput = _registerWrapper.transform.Find("InputsWrapper/Email")?.GetComponent<TMP_InputField>();
+        TMP_InputField registerPasswordInput = _registerWrapper.transform.Find("InputsWrapper/Password")?.GetComponent<TMP_InputField>();
+
+        RegisterRequest registerRequest = new()
+        {
+            Username = registerUsernameInput.text,
+            Email = registerEmailInput.text,
+            Password = registerPasswordInput.text,
+            Version = WebSocketClient.instance.Version,
+            Serial = WebSocketClient.instance.Serial,
+        };
+
+        GameServerProto.Wrapper wrapper = new()
+        {
+            Type = "RegisterRequest",
+            Payload = registerRequest.ToByteString(),
+        };
+        WebSocketClient.Send(wrapper.ToByteArray());
+    }
 
     public void CancelButtonRegisterPressed()
     {
+        TMP_InputField loginUsernameInput = _loginWrapper.transform.Find("InputsWrapper/Username")?.GetComponent<TMP_InputField>();
+        TMP_InputField registerUsernameInput = _registerWrapper.transform.Find("InputsWrapper/Username")?.GetComponent<TMP_InputField>();
+        if (registerUsernameInput.text != "")
+        {
+            loginUsernameInput.text = registerUsernameInput.text;
+        }
         DestroyImmediate(_registerWrapper);
         _loginWrapper.SetActive(true);
-        _loginWrapper.GetComponent<InputManager>().SelectInputField(0);
+        _loginWrapper.GetComponent<InputManager>().Init();
     }
 
     private void SendLoginRequest()
@@ -361,4 +391,5 @@ public class SelectServerManager : MonoBehaviour
         };
         WebSocketClient.Send(wrapper.ToByteArray());
     }
+    
 }

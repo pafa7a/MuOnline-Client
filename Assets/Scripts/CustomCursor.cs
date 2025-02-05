@@ -37,8 +37,7 @@ public class CursorManager : MonoBehaviour
         Cursor.SetCursor(defaultCursor, hotSpot, cursorMode);
         hoverTextures = ConvertSpritesToTextures(hoverCursorFrames);
     }
-
-    async Task UpdateAsync()
+    async void Update()
     {
         HandleRaycast();
         await HandleClickAsync();
@@ -76,6 +75,7 @@ public class CursorManager : MonoBehaviour
             }
             if (hit.collider.GetComponent<TalkCursorMarker>().name == "Cube") {
                 await WebSocketClient.instance.ConnectToConnectServer();
+                SceneManager.LoadScene("ServerSelect");
             }
         }
         }

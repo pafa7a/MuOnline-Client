@@ -11,6 +11,20 @@ public class InputManager : MonoBehaviour
 
     void Start()
     {
+        Init();
+    }
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Tab) && inputFields.Count > 0)
+        {
+            currentInputIndex = (currentInputIndex + 1) % inputFields.Count;
+            SelectInputField(currentInputIndex);
+        }
+    }
+
+    public void Init()
+    {
         if (inputFields == null || inputFields.Count == 0) return;
 
         TMP_InputField usernameField = inputFields[0].GetComponent<TMP_InputField>();
@@ -26,22 +40,13 @@ public class InputManager : MonoBehaviour
         }
     }
 
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Tab) && inputFields.Count > 0)
-        {
-            currentInputIndex = (currentInputIndex + 1) % inputFields.Count;
-            SelectInputField(currentInputIndex);
-        }
-    }
-
     public void SelectInputField(int index)
     {
         if (index < 0 || index >= inputFields.Count) return;
 
         EventSystem.current.SetSelectedGameObject(inputFields[index].gameObject);
         TMP_InputField inputField = inputFields[index].GetComponent<TMP_InputField>();
-        
+
         if (inputField != null)
         {
             inputField.ActivateInputField();
