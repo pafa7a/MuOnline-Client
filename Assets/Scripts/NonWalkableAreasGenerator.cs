@@ -79,6 +79,7 @@ public class NonWalkableAreasGenerator : MonoBehaviour
 
                         NavMeshModifierVolume modifierVolume = volumeObject.AddComponent<NavMeshModifierVolume>();
                         modifierVolume.size = volumeSize;
+                        modifierVolume.center = Vector3.zero;
                         modifierVolume.area = NavMesh.GetAreaFromName("Not Walkable");
 
                         // Parent it to the sub-parent GameObject
