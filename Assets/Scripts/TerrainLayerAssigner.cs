@@ -36,8 +36,15 @@ public class TerrainLayerAssigner : MonoBehaviour
             return;
         }
 
-        int terrainSize = 256; // Map size is 256x256
-        float[,,] splatmapData = new float[terrainSize, terrainSize, terrainLayers.Length];
+        int terrainSize = 256; // Raw map size
+        int splatmapResolution = terrain.terrainData.alphamapResolution; // Unity's splatmap size
+        float[,,] splatmapData = new float[splatmapResolution, splatmapResolution, terrainLayers.Length];
+
+        Debug.Log($"📏 Terrain Size: {terrainSize}x{terrainSize}, Splatmap Resolution: {splatmapResolution}x{splatmapResolution}");
+
+        // Offsets to improve alignment
+        float xOffset = 2f;  // Slight shift
+        float yOffset = 0f; 
 
         for (int i = 1; i < lines.Length; i++) // Skip header line
         {
@@ -50,25 +57,28 @@ public class TerrainLayerAssigner : MonoBehaviour
             int layer2ID = int.Parse(parts[3]);
             float alpha = float.Parse(parts[4]);
 
-            int unityY = terrainSize - 1 - y; // Flip Y for Unity terrain
-            int scaledX = x; // X remains the same
+            // Normalize coordinates for splatmap resolution (adjusting the range)
+            float normalizedX = (x + xOffset) / (terrainSize - 1);
+            float normalizedY = (y + yOffset) / (terrainSize - 1);
+
+            int unityX = Mathf.Clamp(Mathf.RoundToInt(normalizedX * (splatmapResolution - 1)), 0, splatmapResolution - 1);
+            int unityY = Mathf.Clamp(Mathf.RoundToInt(normalizedY * (splatmapResolution - 1)), 0, splatmapResolution - 1);
 
             // Ensure valid layer indices
-            if (layer1ID >= terrainLayers.Length) continue; // Skip if invalid layer1
-            if (layer2ID >= terrainLayers.Length) layer2ID = layer1ID; // Use layer1 if layer2 is invalid
+            if (layer1ID >= terrainLayers.Length) continue;
+            if (layer2ID >= terrainLayers.Length) layer2ID = layer1ID;
 
-            // Assign splatmap values
-            splatmapData[unityY, scaledX, layer1ID] = 1.0f; // Always full alpha for layer1
-
-            if (alpha > 0.0f) // Blend layer2 only when alpha is present
+            // Assign splatmap values with blending
+            splatmapData[unityY, unityX, layer1ID] = 1.0f;
+            if (alpha > 0.0f)
             {
-                splatmapData[unityY, scaledX, layer1ID] = 1.0f - alpha;
-                splatmapData[unityY, scaledX, layer2ID] = alpha;
+                splatmapData[unityY, unityX, layer1ID] = 1.0f - alpha;
+                splatmapData[unityY, unityX, layer2ID] = alpha;
             }
         }
 
         // Apply splatmap data to terrain
         terrain.terrainData.SetAlphamaps(0, 0, splatmapData);
-        Debug.Log("✅ Terrain layers successfully applied!");
+        Debug.Log("✅ Terrain layers successfully applied with fixed alignment!");
     }
 }
