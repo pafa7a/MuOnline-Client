@@ -10,21 +10,20 @@ public class LoginResponseHandler : IMessageHandler
 {
     [DllImport("__Internal")]
     private static extern void ClosePage();
+
     public void HandleMessage(byte[] message, Action<byte[]> sendMessage)
     {
         LoginResponse loginResponse = LoginResponse.Parser.ParseFrom(message);
         string popUpText = "";
+
         if (loginResponse.ResponseCode == LoginResponseEnum.LoginOk)
         {
+            // Subscribe to sceneLoaded event to ensure message is sent after the scene loads
+            SceneManager.sceneLoaded += OnSceneLoaded;
             SceneManager.LoadScene("World");
-            Wrapper wrapper = new()
-            {
-                Type = "WorldEnter",
-                Payload = ByteString.Empty,
-            };
-            WebSocketClient.Send(wrapper.ToByteArray());
             return;
         }
+
         Action onOk = null;
         switch (loginResponse.ResponseCode)
         {
@@ -62,5 +61,22 @@ public class LoginResponseHandler : IMessageHandler
                 break;
         }
         PopUpMessage.Show(popUpText, PopUpMessage.ButtonsEnum.OK, onOk);
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.name == "World")
+        {
+            // Unsubscribe to avoid multiple calls
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+
+            // Send WebSocket message after scene is fully loaded
+            Wrapper wrapper = new()
+            {
+                Type = "WorldEnter",
+                Payload = ByteString.Empty,
+            };
+            WebSocketClient.Send(wrapper.ToByteArray());
+        }
     }
 }

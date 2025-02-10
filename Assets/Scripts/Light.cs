@@ -90,8 +90,11 @@ public class LightmapToLights : MonoBehaviour
             bakingOutput.lightmapBakeType = LightmapBakeType.Baked;
             light.bakingOutput = bakingOutput;
 
+
+#if UNITY_EDITOR
             // Set the light to Baked mode
             light.lightmapBakeType = LightmapBakeType.Baked;
+#endif
 
             // Set light properties
             light.intensity = brightness * intensityMultiplier; // Scale brightness
