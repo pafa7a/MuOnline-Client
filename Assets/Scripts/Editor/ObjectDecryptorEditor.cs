@@ -87,7 +87,7 @@ public class ObjectDecryptorEditor
             short type = System.BitConverter.ToInt16(data, dataPtr); dataPtr += 2;
             float posX = System.BitConverter.ToSingle(data, dataPtr) / 100; dataPtr += 4;
             float posY = System.BitConverter.ToSingle(data, dataPtr) / 100; dataPtr += 4;
-            float posZ = System.BitConverter.ToSingle(data, dataPtr); dataPtr += 4;
+            float posZ = System.BitConverter.ToSingle(data, dataPtr) / 100; dataPtr += 4;
             float angX = System.BitConverter.ToSingle(data, dataPtr); dataPtr += 4;
             float angY = System.BitConverter.ToSingle(data, dataPtr); dataPtr += 4;
             float angZ = System.BitConverter.ToSingle(data, dataPtr); dataPtr += 4;
