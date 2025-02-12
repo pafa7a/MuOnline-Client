@@ -106,6 +106,7 @@ public class MapDecryptorEditor
         }
 
         File.WriteAllText(outputPath, sb.ToString());
-        Debug.Log("✔ Terrain data saved in structured format.");
+        AssetDatabase.Refresh();
+        Debug.Log("✔ Terrain data saved in structured format.");        
     }
 }

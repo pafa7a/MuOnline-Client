@@ -97,6 +97,7 @@ public class ObjectDecryptorEditor
         }
 
         File.WriteAllText(outputPath, sb.ToString());
+        AssetDatabase.Refresh();
         Debug.Log($"✔ Data saved with Header: {header}, Map Number: {mapNumber}, Object Count: {objectCount}");
     }
 }
