@@ -2,6 +2,7 @@ using GameServerProto;
 using Google.Protobuf;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.SceneManagement;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -15,14 +16,32 @@ public class PlayerMovement : MonoBehaviour
     private float lastRequestTime = 0f; // Time when the last request was sent
     public float requestInterval = 0.2f; // Minimum time between requests in seconds
 
+    private float defaultSpeed; // Stores the default speed of the NavMeshAgent
+    private int safeZoneArea; // Stores the NavMesh area index for SafeZone
+
+    private CanvasManager _canvas;
+    private bool _shouldDisplayPlayerCoordinates = false;
+
     void Start()
     {
         // Get the NavMeshAgent component attached to the player
         agent = GetComponent<NavMeshAgent>();
+        defaultSpeed = 4f; // Store the default speed
+
+        // Get the SafeZone area index
+        safeZoneArea = NavMesh.GetAreaFromName("SafeZone");
+
         // Check if this GameObject is the local player
         if (PlayerManager.Instance != null && PlayerManager.Instance.ownPlayerId == gameObject.name)
         {
             isLocalPlayer = true;
+            // Display coordinates only in World scene.
+            Scene scene = SceneManager.GetActiveScene();
+            _canvas = CanvasManager.Instance;
+            if (_canvas && scene != null && scene.name == "World")
+            {
+                _shouldDisplayPlayerCoordinates = true;
+            }
         }
 
         // Add a LineRenderer component if not already attached
@@ -37,12 +56,14 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        // Only allow input and path drawing for the local player
         if (isLocalPlayer)
         {
             HandleInput();
+            DisplayPlayerCoordinatesInCanvas();
         }
+
         DrawPath();
+        AdjustSpeedForSafeZone();
     }
 
     void HandleInput()
@@ -97,5 +118,80 @@ public class PlayerMovement : MonoBehaviour
         {
             lineRenderer.SetPosition(i, path.corners[i]);
         }
+    }
+
+    void AdjustSpeedForSafeZone()
+    {
+        if (!agent.isOnNavMesh)
+        {
+            Debug.LogWarning($"⚠️ Player is NOT on the NavMesh at {transform.position}!");
+            return;
+        }
+
+        // ✅ Get the current NavMesh Area
+        string zoneName = GetCurrentNavMeshAreaName();
+
+        if (zoneName == "Non-PvP")
+        {
+            agent.speed = Mathf.Max(1f, defaultSpeed * 0.9f); // Reduce speed to 90%
+        }
+        else
+        {
+            agent.speed = defaultSpeed;
+        }
+    }
+
+    // ✅ Extracts the correct NavMesh Area
+    int GetAreaFromHit(NavMeshHit hit)
+    {
+        for (int i = 0; i < 32; i++)
+        {
+            if ((hit.mask & (1 << i)) != 0)
+            {
+                return i;
+            }
+        }
+        return 0; // Default Walkable
+    }
+
+    void OnDestroy()
+    {
+        if (_canvas != null)
+        {
+            _canvas.PlayerCoordinatesObject.gameObject.SetActive(false);
+        }
+    }
+
+    void DisplayPlayerCoordinatesInCanvas()
+    {
+        if (_shouldDisplayPlayerCoordinates)
+        {
+            _canvas.PlayerCoordinatesObject.gameObject.SetActive(_canvas.PlayerCoordinatesDisplay);
+
+            // Get current NavMesh area
+            string zoneName = GetCurrentNavMeshAreaName();
+
+            _canvas.PlayerCoordinatesObject.text = $"Player: X: {gameObject.transform.position.x:F0}, Y: {gameObject.transform.position.z:F0}\nZone: {zoneName}\nSpeed: {agent.speed:F1}";
+        }
+    }
+
+    // ✅ Function to get the area name from NavMesh position
+    string GetCurrentNavMeshAreaName()
+    {
+        if (!agent.isOnNavMesh) return "Unknown";
+
+        NavMeshHit hit;
+        Vector3 checkPosition = transform.position + Vector3.down * 0.1f;
+
+        if (!NavMesh.SamplePosition(checkPosition, out hit, 3.0f, NavMesh.AllAreas))
+        {
+            return "Unknown";
+        }
+
+        int currentArea = GetAreaFromHit(hit);
+
+        if (currentArea == safeZoneArea) return "Non-PvP";
+
+        return currentArea == 0 ? "PvP" : $"Area {currentArea}";
     }
 }
