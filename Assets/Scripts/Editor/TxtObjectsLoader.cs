@@ -29,14 +29,6 @@ public class TxtObjectLoader : MonoBehaviour
             Debug.LogWarning("No active terrain found! Objects will be placed at their original Y positions.");
         }
 
-        float terrainWidth = 256f;
-        float terrainHeight = 256f;
-        if (terrain != null)
-        {
-            terrainWidth = terrain.terrainData.size.x;
-            terrainHeight = terrain.terrainData.size.z;
-        }
-
         // === STEP 1: MAP TYPE TO OBJECT NAME (CORRECTED) ===
         Dictionary<int, string> typeToObject = new Dictionary<int, string>
         {
@@ -114,7 +106,7 @@ public class TxtObjectLoader : MonoBehaviour
                 float adjustedY = terrain != null ? terrain.SampleHeight(new Vector3(posX, 0, posZ)) + terrain.transform.position.y : posY;
 
                 instance.transform.position = new Vector3(posX, posY + 0.86f, posZ);
-                instance.transform.eulerAngles = new Vector3(rotX, rotY, rotZ);
+                instance.transform.eulerAngles = new Vector3(rotX, 180f - rotY, rotZ);
                 instance.transform.localScale = new Vector3(scale, scale, scale);
                 instance.transform.SetParent(parentObject.transform);
             }
