@@ -103,6 +103,30 @@ public class ObjectsImportEditor : MonoBehaviour
                 GameObject instance = Instantiate(prefab);
                 instance.name = objectName;
 
+                // Fix double-sided rendering and material settings
+                foreach (var renderer in instance.GetComponentsInChildren<Renderer>())
+                {
+                    if (renderer is MeshRenderer || renderer is SkinnedMeshRenderer)
+                    {
+                        foreach (Material material in renderer.sharedMaterials)
+                        {
+                            if (material != null)
+                            {
+                                material.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Off);
+                                material.SetInt("_ZWrite", 1); // Enable depth writing
+                                material.SetFloat("_Mode", 0); // Set to Opaque mode
+                                material.renderQueue = -1; // Use default render queue
+                                material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+                                material.DisableKeyword("_ALPHABLEND_ON");
+                                material.EnableKeyword("_ALPHATEST_ON");
+                                material.SetOverrideTag("RenderType", "TransparentCutout");
+                                material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
+                                material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
+                            }
+                        }
+                    }
+                }
+
                 float adjustedY = terrain != null ? terrain.SampleHeight(new Vector3(posX, 0, posZ)) + terrain.transform.position.y : posY;
 
                 instance.transform.position = new Vector3(posX, posY + 0.86f, posZ);
