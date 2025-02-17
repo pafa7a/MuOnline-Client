@@ -65,7 +65,19 @@ public class ObjectsImportEditor : MonoBehaviour
 
         string basePath = "Assets/Resources/Maps/World1/Objects/";
 
-        GameObject parentObject = GameObject.Find("MapObjects") ?? new GameObject("MapObjects");
+        GameObject mapObject = GameObject.Find("Map");
+        if (mapObject == null)
+        {
+            Debug.LogError("Map object not found in scene. Please create a Map object first.");
+            return;
+        }
+
+        GameObject parentObject = GameObject.Find("Objects");
+        if (parentObject == null)
+        {
+            parentObject = new GameObject("Objects");
+            parentObject.transform.SetParent(mapObject.transform);
+        }
 
         for (int i = 4; i < lines.Length; i++)
         {
@@ -103,26 +115,26 @@ public class ObjectsImportEditor : MonoBehaviour
                 GameObject instance = Instantiate(prefab);
                 instance.name = objectName;
 
-                // Fix double-sided rendering and material settings
+                // Add the material fixer component
+                instance.AddComponent<MapObjectMaterialFixer>();
+
+                // Only set culling to Off, nothing else
                 foreach (var renderer in instance.GetComponentsInChildren<Renderer>())
                 {
-                    if (renderer is MeshRenderer || renderer is SkinnedMeshRenderer)
+                    foreach (Material material in renderer.sharedMaterials)
                     {
-                        foreach (Material material in renderer.sharedMaterials)
+                        if (material != null)
                         {
-                            if (material != null)
-                            {
-                                material.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Off);
-                                material.SetInt("_ZWrite", 1); // Enable depth writing
-                                material.SetFloat("_Mode", 0); // Set to Opaque mode
-                                material.renderQueue = -1; // Use default render queue
-                                material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-                                material.DisableKeyword("_ALPHABLEND_ON");
-                                material.EnableKeyword("_ALPHATEST_ON");
-                                material.SetOverrideTag("RenderType", "TransparentCutout");
-                                material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
-                                material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
-                            }
+                            material.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Off);
+                            material.SetInt("_ZWrite", 1); // Enable depth writing
+                            material.SetFloat("_Mode", 0); // Set to Opaque mode
+                            material.renderQueue = -1; // Use default render queue
+                            material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+                            material.DisableKeyword("_ALPHABLEND_ON");
+                            material.EnableKeyword("_ALPHATEST_ON");
+                            material.SetOverrideTag("RenderType", "TransparentCutout");
+                            material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
+                            material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
                         }
                     }
                 }
