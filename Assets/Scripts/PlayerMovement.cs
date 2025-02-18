@@ -38,7 +38,7 @@ public class PlayerMovement : MonoBehaviour
             // Display coordinates only in World scene.
             Scene scene = SceneManager.GetActiveScene();
             _canvas = CanvasManager.Instance;
-            if (_canvas && scene != null && scene.name == "World")
+            if (_canvas && scene != null && scene.name != "ServerSelect")
             {
                 _shouldDisplayPlayerCoordinates = true;
             }

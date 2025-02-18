@@ -75,7 +75,7 @@ public class CursorManager : MonoBehaviour
             }
             if (hit.collider.GetComponent<TalkCursorMarker>().name == "Cube") {
                 await WebSocketClient.instance.ConnectToConnectServer();
-                SceneManager.LoadScene("ServerSelect");
+                SceneManager.LoadScene("World75");
             }
         }
         }

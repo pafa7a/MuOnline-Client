@@ -20,7 +20,7 @@ public class LoginResponseHandler : IMessageHandler
         {
             // Subscribe to sceneLoaded event to ensure message is sent after the scene loads
             SceneManager.sceneLoaded += OnSceneLoaded;
-            SceneManager.LoadScene("World");
+            SceneManager.LoadScene("World1");
             return;
         }
 
@@ -65,7 +65,7 @@ public class LoginResponseHandler : IMessageHandler
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (scene.name == "World")
+        if (scene.name != "ServerSelect")
         {
             // Unsubscribe to avoid multiple calls
             SceneManager.sceneLoaded -= OnSceneLoaded;

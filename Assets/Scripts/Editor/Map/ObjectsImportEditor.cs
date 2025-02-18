@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class ObjectsImportEditor : MonoBehaviour
 {
+    private static string mapNumber;
+
     [MenuItem("Assets/MuOnline/Import objects", false, 1201)]
     private static void ParseAndLoadObjects()
     {
@@ -63,7 +65,8 @@ public class ObjectsImportEditor : MonoBehaviour
             { 146, "Furniture07" }, { 150, "Candle01" }, { 151, "Beer01" }, { 152, "Beer02" }, { 153, "Beer03" }
         };
 
-        string basePath = "Assets/Resources/Maps/World1/Objects/";
+        mapNumber = lines[1].Split(':')[1].Trim();
+        string basePath = $"Assets/Resources/Maps/World{mapNumber}/Objects/";
 
         GameObject mapObject = GameObject.Find("Map");
         if (mapObject == null)
@@ -93,10 +96,18 @@ public class ObjectsImportEditor : MonoBehaviour
             float rotY = float.Parse(parts[6]);
             float scale = float.Parse(parts[7]);
 
-            if (!typeToObject.TryGetValue(type, out string objectName))
+            string objectName;
+            if (mapNumber == "1")
             {
-                Debug.LogWarning($"Type {type} not mapped, skipping.");
-                continue;
+                if (!typeToObject.TryGetValue(type, out objectName))
+                {
+                    Debug.LogWarning($"Type {type} not mapped, skipping.");
+                    continue;
+                }
+            }
+            else
+            {
+                objectName = (type + 1) < 10 ? $"Object0{type + 1}" : $"Object{type + 1}";
             }
 
             string folderName = $"_Fbx_{objectName}";

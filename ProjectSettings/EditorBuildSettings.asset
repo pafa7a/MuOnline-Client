@@ -9,8 +9,11 @@ EditorBuildSettings:
     path: Assets/Scenes/ServerSelect.unity
     guid: 38fccdb13f89898459d5660d8c0b68ef
   - enabled: 1
-    path: Assets/Scenes/World.unity
-    guid: 99c9720ab356a0642a771bea13969a05
+    path: Assets/Scenes/World1.unity
+    guid: cce5a15f43a49d14da7b87e52d5b6653
+  - enabled: 1
+    path: Assets/Scenes/World75.unity
+    guid: c128342396fd40748b5b196eaa26b1fa
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0
