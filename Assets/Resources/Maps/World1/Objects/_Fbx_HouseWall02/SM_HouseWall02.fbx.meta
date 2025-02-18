@@ -3,7 +3,32 @@ guid: 9552a1eaa097e6445a03f64ed8e215d7
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MI_JPG_light_02
+    second: {fileID: 2100000, guid: 3cd8ed1ab81ebf6479fd0799ab247bda, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MI_JPG_tile_ston04
+    second: {fileID: 2100000, guid: 0b952f56c46c3e041b7b0c7ea6161b4c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MI_JPG_tile_ston06
+    second: {fileID: 2100000, guid: 54273568ad05f4846b57845ce6c66aad, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MI_JPG_tile_wood01
+    second: {fileID: 2100000, guid: 527d8fd4d9ef48a4aa1e9d69603ab502, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MI_JPG_tile_wood02
+    second: {fileID: 2100000, guid: af8ad79605f70c2409dc9f346868263e, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

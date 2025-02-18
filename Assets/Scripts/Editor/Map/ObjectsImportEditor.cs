@@ -125,10 +125,6 @@ public class ObjectsImportEditor : MonoBehaviour
             {
                 GameObject instance = Instantiate(prefab);
                 instance.name = objectName;
-
-                // Add the material fixer component
-                instance.AddComponent<MapObjectMaterialFixer>();
-
                 instance.transform.position = new Vector3(posX, posY + 0.86f, posZ);
                 instance.transform.eulerAngles = new Vector3(rotX, 180f - rotY, rotZ);
                 instance.transform.localScale = new Vector3(scale, scale, scale);
