@@ -17,10 +17,36 @@ public class PlayerMovement : MonoBehaviour
     public float requestInterval = 0.2f; // Minimum time between requests in seconds
 
     private float defaultSpeed; // Stores the default speed of the NavMeshAgent
-    private int safeZoneArea; // Stores the NavMesh area index for SafeZone
+    private int safeZoneArea; // Stores the default speed of the NavMeshAgent
 
     private CanvasManager _canvas;
     private bool _shouldDisplayPlayerCoordinates = false;
+
+    // Add these new cached variables at the top with other private fields
+    private Terrain _cachedTerrain;
+    private TerrainData _cachedTerrainData;
+    private TerrainLayer[] _cachedTerrainLayers;
+    private Vector3 _cachedTerrainPosition;
+    private float _cachedAlphamapWidth;
+    private float _cachedAlphamapHeight;
+
+    // Remove _terrainCheckInterval and _nextTerrainCheck
+    // Remove _navMeshCheckInterval and _nextNavMeshCheck
+    // Add these new frame-based check variables
+    private const int CHECK_INTERVAL_FRAMES = 30;
+    private int _currentFrame;
+    private string _cachedTerrainLayerResult = "Unknown";
+    private string _cachedNavMeshAreaResult = "Unknown";
+
+    // Add event and args cache
+    public class TerrainUpdateEventArgs : System.EventArgs
+    {
+        public string TerrainLayer { get; set; }
+        public string ZoneType { get; set; }
+    }
+    
+    public event System.EventHandler<TerrainUpdateEventArgs> OnTerrainAndZoneUpdate;
+    private readonly TerrainUpdateEventArgs _updateArgs = new();
 
     void Start()
     {
@@ -52,10 +78,27 @@ public class PlayerMovement : MonoBehaviour
         lineRenderer.startWidth = lineWidth;
         lineRenderer.endWidth = lineWidth;
         lineRenderer.positionCount = 0; // No points initially
+
+        // Add this to the existing Start method
+        CacheTerrainData();
     }
 
     void Update()
     {
+        _currentFrame++;
+
+        // Check and dispatch event every 30 frames
+        if (_currentFrame % CHECK_INTERVAL_FRAMES == 0)
+        {
+            _cachedTerrainLayerResult = GetCurrentTerrainLayer();
+            _cachedNavMeshAreaResult = GetCurrentNavMeshAreaName();
+            
+            // Reuse the same event args instance
+            _updateArgs.TerrainLayer = _cachedTerrainLayerResult;
+            _updateArgs.ZoneType = _cachedNavMeshAreaResult;
+            OnTerrainAndZoneUpdate?.Invoke(this, _updateArgs);
+        }
+
         if (isLocalPlayer)
         {
             HandleInput();
@@ -128,12 +171,15 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-        // ✅ Get the current NavMesh Area
-        string zoneName = GetCurrentNavMeshAreaName();
-
-        if (zoneName == "Non-PvP")
+        // Update zone info every CHECK_INTERVAL_FRAMES
+        if (_currentFrame % CHECK_INTERVAL_FRAMES == 0)
         {
-            agent.speed = Mathf.Max(1f, defaultSpeed * 0.9f); // Reduce speed to 90%
+            _cachedNavMeshAreaResult = GetCurrentNavMeshAreaName();
+        }
+
+        if (_cachedNavMeshAreaResult == "Non-PvP")
+        {
+            agent.speed = Mathf.Max(1f, defaultSpeed * 0.9f);
         }
         else
         {
@@ -141,7 +187,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    // ✅ Extracts the correct NavMesh Area
+    // Extracts the correct NavMesh Area
     int GetAreaFromHit(NavMeshHit hit)
     {
         for (int i = 0; i < 32; i++)
@@ -167,15 +213,11 @@ public class PlayerMovement : MonoBehaviour
         if (_shouldDisplayPlayerCoordinates)
         {
             _canvas.PlayerCoordinatesObject.gameObject.SetActive(_canvas.PlayerCoordinatesDisplay);
-
-            // Get current NavMesh area
-            string zoneName = GetCurrentNavMeshAreaName();
-
-            _canvas.PlayerCoordinatesObject.text = $"Player: X: {gameObject.transform.position.x:F0}, Y: {gameObject.transform.position.z:F0}\nZone: {zoneName}\nSpeed: {agent.speed:F1}";
+            _canvas.PlayerCoordinatesObject.text = $"Player: X: {gameObject.transform.position.x:F0}, Y: {gameObject.transform.position.z:F0}\nZone: {_cachedNavMeshAreaResult}\nTerrain layer: {_cachedTerrainLayerResult}\nSpeed: {agent.speed:F1}";
         }
     }
 
-    // ✅ Function to get the area name from NavMesh position
+    // Get the area name from NavMesh position
     string GetCurrentNavMeshAreaName()
     {
         if (!agent.isOnNavMesh) return "Unknown";
@@ -193,5 +235,56 @@ public class PlayerMovement : MonoBehaviour
         if (currentArea == safeZoneArea) return "Non-PvP";
 
         return currentArea == 0 ? "PvP" : $"Area {currentArea}";
+    }
+
+    private void CacheTerrainData()
+    {
+        _cachedTerrain = Terrain.activeTerrain;
+        if (_cachedTerrain != null)
+        {
+            _cachedTerrainData = _cachedTerrain.terrainData;
+            _cachedTerrainLayers = _cachedTerrainData.terrainLayers;
+            _cachedTerrainPosition = _cachedTerrain.transform.position;
+            _cachedAlphamapWidth = _cachedTerrainData.alphamapWidth;
+            _cachedAlphamapHeight = _cachedTerrainData.alphamapHeight;
+        }
+    }
+
+    string GetCurrentTerrainLayer()
+    {
+        if (_cachedTerrain == null || _cachedTerrainData == null)
+            return "Unknown";
+
+        // Calculate normalized position
+        Vector3 terrainPosition = transform.position - _cachedTerrainPosition;
+        float normalizedX = terrainPosition.x / _cachedTerrainData.size.x;
+        float normalizedZ = terrainPosition.z / _cachedTerrainData.size.z;
+
+        // Early bounds check
+        if (normalizedX < 0 || normalizedX > 1 || normalizedZ < 0 || normalizedZ > 1)
+            return "Out of Bounds";
+
+        // Convert to alphamap coordinates
+        int alphamapX = Mathf.Clamp(Mathf.FloorToInt(normalizedX * _cachedAlphamapWidth), 0, (int)_cachedAlphamapWidth - 1);
+        int alphamapZ = Mathf.Clamp(Mathf.FloorToInt(normalizedZ * _cachedAlphamapHeight), 0, (int)_cachedAlphamapHeight - 1);
+
+        // Get splatmap data only for the exact point we need
+        float[,,] splatmapData = _cachedTerrainData.GetAlphamaps(alphamapX, alphamapZ, 1, 1);
+
+        // Find dominant texture using a more efficient loop
+        int dominantIndex = 0;
+        float strongestWeight = splatmapData[0, 0, 0];
+
+        for (int i = 1; i < _cachedTerrainLayers.Length; i++)
+        {
+            float weight = splatmapData[0, 0, i];
+            if (weight > strongestWeight)
+            {
+                strongestWeight = weight;
+                dominantIndex = i;
+            }
+        }
+
+        return _cachedTerrainLayers[dominantIndex].name;
     }
 }

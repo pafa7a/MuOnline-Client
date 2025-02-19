@@ -129,6 +129,32 @@ public class ObjectsImportEditor : MonoBehaviour
                 instance.transform.eulerAngles = new Vector3(rotX, 180f - rotY, rotZ);
                 instance.transform.localScale = new Vector3(scale, scale, scale);
                 instance.transform.SetParent(parentObject.transform);
+
+                // Add tag for specific walls in map 1
+                if (mapNumber == "1" && (objectName == "HouseWall05" || objectName == "HouseWall06"))
+                {
+                    // Ensure the tag exists in Unity's tags
+                    SerializedObject tagManager = new SerializedObject(AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/TagManager.asset")[0]);
+                    SerializedProperty tagsProp = tagManager.FindProperty("tags");
+
+                    bool found = false;
+                    for (int j = 0; j < tagsProp.arraySize; j++)
+                    {
+                        SerializedProperty t = tagsProp.GetArrayElementAtIndex(j);
+                        if (t.stringValue.Equals("Ceiling")) { found = true; break; }
+                    }
+
+                    // Add tag if it doesn't exist
+                    if (!found)
+                    {
+                        tagsProp.InsertArrayElementAtIndex(0);
+                        SerializedProperty sp = tagsProp.GetArrayElementAtIndex(0);
+                        sp.stringValue = "Ceiling";
+                        tagManager.ApplyModifiedProperties();
+                    }
+
+                    instance.tag = "Ceiling";
+                }
             }
         }
         Debug.Log("Finished loading objects.");
