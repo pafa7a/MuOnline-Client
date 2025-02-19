@@ -48,6 +48,10 @@ public class PlayerMovement : MonoBehaviour
     public event System.EventHandler<TerrainUpdateEventArgs> OnTerrainAndZoneUpdate;
     private readonly TerrainUpdateEventArgs _updateArgs = new();
 
+    // Add these new tracking variables after other private fields
+    private string _previousTerrainLayer = "Unknown";
+    private string _previousNavMeshArea = "Unknown";
+
     void Start()
     {
         // Get the NavMeshAgent component attached to the player
@@ -87,16 +91,26 @@ public class PlayerMovement : MonoBehaviour
     {
         _currentFrame++;
 
-        // Check and dispatch event every 30 frames
+        // Check every 30 frames
         if (_currentFrame % CHECK_INTERVAL_FRAMES == 0)
         {
-            _cachedTerrainLayerResult = GetCurrentTerrainLayer();
-            _cachedNavMeshAreaResult = GetCurrentNavMeshAreaName();
+            string currentTerrainLayer = GetCurrentTerrainLayer();
+            string currentNavMeshArea = GetCurrentNavMeshAreaName();
             
-            // Reuse the same event args instance
-            _updateArgs.TerrainLayer = _cachedTerrainLayerResult;
-            _updateArgs.ZoneType = _cachedNavMeshAreaResult;
-            OnTerrainAndZoneUpdate?.Invoke(this, _updateArgs);
+            // Only trigger event if there's a change
+            if (currentTerrainLayer != _previousTerrainLayer || currentNavMeshArea != _previousNavMeshArea)
+            {
+                _cachedTerrainLayerResult = currentTerrainLayer;
+                _cachedNavMeshAreaResult = currentNavMeshArea;
+                
+                _updateArgs.TerrainLayer = _cachedTerrainLayerResult;
+                _updateArgs.ZoneType = _cachedNavMeshAreaResult;
+                OnTerrainAndZoneUpdate?.Invoke(this, _updateArgs);
+                
+                // Update previous values
+                _previousTerrainLayer = currentTerrainLayer;
+                _previousNavMeshArea = currentNavMeshArea;
+            }
         }
 
         if (isLocalPlayer)
