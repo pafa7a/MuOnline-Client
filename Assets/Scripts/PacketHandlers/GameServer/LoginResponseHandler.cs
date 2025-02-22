@@ -1,4 +1,3 @@
-using System.Runtime.InteropServices;
 using System;
 using GameServerProto;
 using UnityEngine;
@@ -8,8 +7,10 @@ using Google.Protobuf;
 [MessageType("LoginResponse")]
 public class LoginResponseHandler : IMessageHandler
 {
+#if UNITY_WEBGL && !UNITY_EDITOR
     [DllImport("__Internal")]
     private static extern void ClosePage();
+#endif
 
     public void HandleMessage(byte[] message, Action<byte[]> sendMessage)
     {
