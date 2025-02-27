@@ -130,6 +130,29 @@ public class ObjectsImportEditor : MonoBehaviour
                 instance.transform.localScale = new Vector3(scale, scale, scale);
                 instance.transform.SetParent(parentObject.transform);
 
+                // Hide materials for specific objects in map 74
+                if (mapNumber == "74")
+                {
+                    switch (type)
+                    {
+                        case 129:
+                        case 79:
+                        case 83:
+                        case 82:
+                        case 85:
+                        case 86:
+                        case 130:
+                        case 131:
+                        case 158:
+                            Renderer[] renderers = instance.GetComponentsInChildren<Renderer>();
+                            foreach (var renderer in renderers)
+                            {
+                                DestroyImmediate(renderer);
+                            }
+                            break;
+                    }
+                }
+
                 // Add tag for specific walls in map 1
                 if (mapNumber == "1" && (objectName == "HouseWall05" || objectName == "HouseWall06"))
                 {

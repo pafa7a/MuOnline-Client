@@ -2,6 +2,7 @@ using System;
 using GameServerProto;
 using UnityEngine;
 using TMPro;
+using System.Runtime.InteropServices;
 
 [MessageType("RegisterResponse")]
 public class RegisterResponseHandler : IMessageHandler

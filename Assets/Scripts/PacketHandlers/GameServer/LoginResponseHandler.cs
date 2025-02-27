@@ -3,6 +3,7 @@ using GameServerProto;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Google.Protobuf;
+using System.Runtime.InteropServices;
 
 [MessageType("LoginResponse")]
 public class LoginResponseHandler : IMessageHandler

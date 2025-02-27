@@ -40,6 +40,8 @@ public class LightmapToLights : MonoBehaviour
         Vector3 terrainPosition = terrain.transform.position;
         Vector3 terrainSize = terrain.terrainData.size;
 
+        if (lightDensity < 1) lightDensity = 1;
+
         // Generate lights from the lightmap
         for (int x = 0; x < lightmap.width; x += lightDensity)
         {
