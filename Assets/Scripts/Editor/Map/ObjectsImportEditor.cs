@@ -5,34 +5,34 @@ using UnityEngine;
 
 public class ObjectsImportEditor : MonoBehaviour
 {
-    private static string mapNumber;
+  private static string mapNumber;
 
-    [MenuItem("Assets/MuOnline/Import objects", false, 1201)]
-    private static void ParseAndLoadObjects()
+  [MenuItem("Assets/MuOnline/Import objects", false, 1201)]
+  private static void ParseAndLoadObjects()
+  {
+    string path = AssetDatabase.GetAssetPath(Selection.activeObject);
+    if (string.IsNullOrEmpty(path) || !path.EndsWith(".txt"))
     {
-        string path = AssetDatabase.GetAssetPath(Selection.activeObject);
-        if (string.IsNullOrEmpty(path) || !path.EndsWith(".txt"))
-        {
-            Debug.LogError("Please select a valid .txt file.");
-            return;
-        }
+      Debug.LogError("Please select a valid .txt file.");
+      return;
+    }
 
-        string[] lines = File.ReadAllLines(path);
-        if (lines.Length < 5)
-        {
-            Debug.LogError("File does not contain enough lines to parse objects.");
-            return;
-        }
+    string[] lines = File.ReadAllLines(path);
+    if (lines.Length < 5)
+    {
+      Debug.LogError("File does not contain enough lines to parse objects.");
+      return;
+    }
 
-        // === FIND TERRAIN ===
-        Terrain terrain = Terrain.activeTerrain;
-        if (terrain == null)
-        {
-            Debug.LogWarning("No active terrain found! Objects will be placed at their original Y positions.");
-        }
+    // === FIND TERRAIN ===
+    Terrain terrain = Terrain.activeTerrain;
+    if (terrain == null)
+    {
+      Debug.LogWarning("No active terrain found! Objects will be placed at their original Y positions.");
+    }
 
-        // === STEP 1: MAP TYPE TO OBJECT NAME (CORRECTED) ===
-        Dictionary<int, string> typeToObject = new Dictionary<int, string>
+    // === STEP 1: MAP TYPE TO OBJECT NAME (CORRECTED) ===
+    Dictionary<int, string> typeToObject = new Dictionary<int, string>
         {
             { 0, "Tree01" }, { 1, "Tree02" }, { 2, "Tree03" }, { 3, "Tree04" }, { 4, "Tree05" },
             { 5, "Tree06" }, { 6, "Tree07" }, { 7, "Tree08" }, { 8, "Tree09" }, { 9, "Tree10" },
@@ -65,128 +65,152 @@ public class ObjectsImportEditor : MonoBehaviour
             { 146, "Furniture07" }, { 150, "Candle01" }, { 151, "Beer01" }, { 152, "Beer02" }, { 153, "Beer03" }
         };
 
-        mapNumber = lines[1].Split(':')[1].Trim();
-        string basePath = $"Assets/Resources/Maps/World{mapNumber}/Objects/";
+    mapNumber = lines[1].Split(':')[1].Trim();
+    string basePath = $"Assets/Resources/Maps/World{mapNumber}/Objects/";
 
-        GameObject mapObject = GameObject.Find("Map");
-        if (mapObject == null)
-        {
-            Debug.LogError("Map object not found in scene. Please create a Map object first.");
-            return;
-        }
-
-        GameObject parentObject = GameObject.Find("Objects");
-        if (parentObject == null)
-        {
-            parentObject = new GameObject("Objects");
-            parentObject.transform.SetParent(mapObject.transform);
-        }
-
-        for (int i = 4; i < lines.Length; i++)
-        {
-            string[] parts = lines[i].Split(',');
-            if (parts.Length < 8) continue;
-
-            int type = int.Parse(parts[0]);
-            float posX = float.Parse(parts[1]);
-            float posZ = float.Parse(parts[2]);
-            float posY = float.Parse(parts[3]);
-            float rotX = float.Parse(parts[4]);
-            float rotZ = float.Parse(parts[5]);
-            float rotY = float.Parse(parts[6]);
-            float scale = float.Parse(parts[7]);
-
-            string objectName;
-            if (mapNumber == "1")
-            {
-                if (!typeToObject.TryGetValue(type, out objectName))
-                {
-                    Debug.LogWarning($"Type {type} not mapped, skipping.");
-                    continue;
-                }
-            }
-            else
-            {
-                objectName = (type + 1) < 10 ? $"Object0{type + 1}" : $"Object{type + 1}";
-            }
-
-            string folderName = $"_Fbx_{objectName}";
-            string folderPath = $"{basePath}{folderName}";
-
-            string modelPath = FindFBXModel(folderPath);
-            if (string.IsNullOrEmpty(modelPath))
-            {
-                Debug.LogWarning($"Model not found in {folderPath}");
-                continue;
-            }
-
-            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(modelPath);
-            if (prefab != null)
-            {
-                GameObject instance = Instantiate(prefab);
-                instance.name = objectName;
-                instance.transform.position = new Vector3(posX, posY + 0.86f, posZ);
-                instance.transform.eulerAngles = new Vector3(rotX, 180f - rotY, rotZ);
-                instance.transform.localScale = new Vector3(scale, scale, scale);
-                instance.transform.SetParent(parentObject.transform);
-
-                // Hide materials for specific objects in map 74
-                if (mapNumber == "74")
-                {
-                    switch (type)
-                    {
-                        case 129:
-                        case 79:
-                        case 83:
-                        case 82:
-                        case 85:
-                        case 86:
-                        case 130:
-                        case 131:
-                        case 158:
-                            Renderer[] renderers = instance.GetComponentsInChildren<Renderer>();
-                            foreach (var renderer in renderers)
-                            {
-                                DestroyImmediate(renderer);
-                            }
-                            break;
-                    }
-                }
-
-                // Add tag for specific walls in map 1
-                if (mapNumber == "1" && (objectName == "HouseWall05" || objectName == "HouseWall06"))
-                {
-                    // Ensure the tag exists in Unity's tags
-                    SerializedObject tagManager = new SerializedObject(AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/TagManager.asset")[0]);
-                    SerializedProperty tagsProp = tagManager.FindProperty("tags");
-
-                    bool found = false;
-                    for (int j = 0; j < tagsProp.arraySize; j++)
-                    {
-                        SerializedProperty t = tagsProp.GetArrayElementAtIndex(j);
-                        if (t.stringValue.Equals("Ceiling")) { found = true; break; }
-                    }
-
-                    // Add tag if it doesn't exist
-                    if (!found)
-                    {
-                        tagsProp.InsertArrayElementAtIndex(0);
-                        SerializedProperty sp = tagsProp.GetArrayElementAtIndex(0);
-                        sp.stringValue = "Ceiling";
-                        tagManager.ApplyModifiedProperties();
-                    }
-
-                    instance.tag = "Ceiling";
-                }
-            }
-        }
-        Debug.Log("Finished loading objects.");
-    }
-
-    private static string FindFBXModel(string folderPath)
+    GameObject mapObject = GameObject.Find("Map");
+    if (mapObject == null)
     {
-        if (!Directory.Exists(folderPath)) return null;
-        string[] files = Directory.GetFiles(folderPath, "*.fbx");
-        return files.Length > 0 ? files[0] : null;
+      Debug.LogError("Map object not found in scene. Please create a Map object first.");
+      return;
     }
+
+    GameObject parentObject = GameObject.Find("Objects");
+    if (parentObject == null)
+    {
+      parentObject = new GameObject("Objects");
+      parentObject.transform.SetParent(mapObject.transform);
+    }
+
+    for (int i = 4; i < lines.Length; i++)
+    {
+      string[] parts = lines[i].Split(',');
+      if (parts.Length < 8) continue;
+
+      int type = int.Parse(parts[0]);
+      float posX = float.Parse(parts[1]);
+      float posZ = float.Parse(parts[2]);
+      float posY = float.Parse(parts[3]);
+      float rotX = float.Parse(parts[4]);
+      float rotZ = float.Parse(parts[5]);
+      float rotY = float.Parse(parts[6]);
+      float scale = float.Parse(parts[7]);
+
+      string objectName;
+      if (mapNumber == "1")
+      {
+        if (!typeToObject.TryGetValue(type, out objectName))
+        {
+          Debug.LogWarning($"Type {type} not mapped, skipping.");
+          continue;
+        }
+      }
+      else
+      {
+        objectName = (type + 1) < 10 ? $"Object0{type + 1}" : $"Object{type + 1}";
+      }
+
+      string folderName = $"_Fbx_{objectName}";
+      string folderPath = $"{basePath}{folderName}";
+
+      string modelPath = FindFBXModel(folderPath);
+      if (string.IsNullOrEmpty(modelPath))
+      {
+        Debug.LogWarning($"Model not found in {folderPath}");
+        continue;
+      }
+
+      GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(modelPath);
+      if (prefab != null)
+      {
+        GameObject instance = Instantiate(prefab);
+        instance.name = objectName;
+        instance.transform.position = new Vector3(posX, posY + 0.86f, posZ);
+        instance.transform.eulerAngles = new Vector3(rotX, 180f - rotY, rotZ);
+        instance.transform.localScale = new Vector3(scale, scale, scale);
+        instance.transform.SetParent(parentObject.transform);
+
+        // Add height controller for Object111 in map 74 or in ServerSelect scene
+        if (mapNumber == "74" && objectName == "Object111" && UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "ServerSelect")
+        {
+          instance.AddComponent<SelectServerGateHeightAnimation>();
+        }
+
+        // Check for existing animation controller
+        string controllerPath = $"{Path.GetDirectoryName(modelPath)}/AnimationController.controller";
+        if (File.Exists(controllerPath))
+        {
+          RuntimeAnimatorController existingController = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(controllerPath);
+          if (existingController != null)
+          {
+            Animator animator = instance.GetComponent<Animator>();
+            if (animator == null)
+            {
+              animator = instance.AddComponent<Animator>();
+            }
+            animator.runtimeAnimatorController = existingController;
+            animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
+            animator.applyRootMotion = false;
+          }
+        }
+
+        // Hide materials for specific objects in map 74
+        if (mapNumber == "74")
+        {
+          switch (type)
+          {
+            case 129:
+            case 79:
+            case 83:
+            case 82:
+            case 85:
+            case 86:
+            case 130:
+            case 131:
+            case 158:
+              Renderer[] renderers = instance.GetComponentsInChildren<Renderer>();
+              foreach (var renderer in renderers)
+              {
+                DestroyImmediate(renderer);
+              }
+              break;
+          }
+        }
+
+        // Add tag for specific walls in map 1
+        if (mapNumber == "1" && (objectName == "HouseWall05" || objectName == "HouseWall06"))
+        {
+          // Ensure the tag exists in Unity's tags
+          SerializedObject tagManager = new SerializedObject(AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/TagManager.asset")[0]);
+          SerializedProperty tagsProp = tagManager.FindProperty("tags");
+
+          bool found = false;
+          for (int j = 0; j < tagsProp.arraySize; j++)
+          {
+            SerializedProperty t = tagsProp.GetArrayElementAtIndex(j);
+            if (t.stringValue.Equals("Ceiling")) { found = true; break; }
+          }
+
+          // Add tag if it doesn't exist
+          if (!found)
+          {
+            tagsProp.InsertArrayElementAtIndex(0);
+            SerializedProperty sp = tagsProp.GetArrayElementAtIndex(0);
+            sp.stringValue = "Ceiling";
+            tagManager.ApplyModifiedProperties();
+          }
+
+          instance.tag = "Ceiling";
+        }
+      }
+    }
+    Debug.Log("Finished loading objects.");
+  }
+
+  private static string FindFBXModel(string folderPath)
+  {
+    if (!Directory.Exists(folderPath)) return null;
+    string[] files = Directory.GetFiles(folderPath, "*.fbx");
+    return files.Length > 0 ? files[0] : null;
+  }
 }
