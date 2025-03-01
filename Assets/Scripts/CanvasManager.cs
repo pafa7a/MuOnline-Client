@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class CanvasManager : MonoBehaviour
 {
@@ -20,6 +21,17 @@ public class CanvasManager : MonoBehaviour
     [Header("Player coordinates")]
     public TMP_Text PlayerCoordinatesObject;
     public bool PlayerCoordinatesDisplay = true;
+    [Header("Loading screen")]
+    public GameObject LoadingScreen;
+
+    public static void LoadScene(string sceneName)
+    {
+        if (Instance != null && Instance.LoadingScreen != null)
+        {
+            Instance.LoadingScreen.SetActive(true);
+        }
+        SceneManager.LoadScene(sceneName);
+    }
 
     void Awake()
     {
@@ -28,6 +40,9 @@ public class CanvasManager : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
+            
+            // Subscribe to scene events
+            SceneManager.sceneLoaded += OnSceneLoaded;
         }
         else
         {
@@ -35,7 +50,20 @@ public class CanvasManager : MonoBehaviour
         }
     }
 
-    
+    private void OnDestroy()
+    {
+        // Cleanup subscriptions
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (LoadingScreen != null)
+        {
+            LoadingScreen.SetActive(false);
+        }
+    }
+
     void Update()
     {
         RenderDebugInfo();

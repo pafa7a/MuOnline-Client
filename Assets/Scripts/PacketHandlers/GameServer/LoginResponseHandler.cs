@@ -22,7 +22,7 @@ public class LoginResponseHandler : IMessageHandler
         {
             // Subscribe to sceneLoaded event to ensure message is sent after the scene loads
             SceneManager.sceneLoaded += OnSceneLoaded;
-            SceneManager.LoadScene("World1");
+            CanvasManager.LoadScene("World1");  // Use our wrapper instead
             return;
         }
 
