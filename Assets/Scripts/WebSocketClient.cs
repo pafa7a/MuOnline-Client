@@ -15,6 +15,8 @@ public class WebSocketClient : MonoBehaviour
     [SerializeField]
     public string connectServerIp = "localhost";
     [SerializeField]
+    public bool useWSS = false;
+    [SerializeField]
     public int connectServerPort = 44405;
     [SerializeField]
     public int gameServerPort = 0;
@@ -70,7 +72,7 @@ public class WebSocketClient : MonoBehaviour
         {
             return;
         }
-        websocket = new WebSocket($"ws://{(isGameServer ? gameServerIp : connectServerIp)}:{(isGameServer ? gameServerPort : connectServerPort)}", new Dictionary<string, string>
+        websocket = new WebSocket($"{(useWSS ? "wss" : "ws")}://{(isGameServer ? gameServerIp : connectServerIp)}:{(isGameServer ? gameServerPort : connectServerPort)}", new Dictionary<string, string>
             {
                 {"clientType", Application.platform.ToString()},
                 {"clientVersion", SystemInfo.operatingSystem}
@@ -88,7 +90,7 @@ public class WebSocketClient : MonoBehaviour
 
         websocket.OnError += (e) =>
         {
-            Debug.LogError($"WebSocket error: {e}");
+            Debug.LogError($"WebSocket error: {e}, {(useWSS ? "wss" : "ws")}://{(isGameServer ? gameServerIp : connectServerIp)}:{(isGameServer ? gameServerPort : connectServerPort)}");
         };
 
         websocket.OnClose += HandleWebSocketClose;
@@ -187,16 +189,6 @@ public class WebSocketClient : MonoBehaviour
     public async void ConnectToGameServer(string IP, int port, int id)
     {
         await CloseConnection();
-        // // Load the World scene asynchronously
-        // AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("World");
-
-        // // Wait until the scene is fully loaded
-        // while (!asyncLoad.isDone)
-        // {
-        //     await Task.Yield();
-        // }
-
-        // Proceed with the rest of the logic
         gameServerIp = IP;
         gameServerPort = port;
         gameServerId = id;
