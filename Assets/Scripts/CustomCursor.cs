@@ -45,7 +45,21 @@ public class CursorManager : MonoBehaviour
 
     private void HandleRaycast()
     {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        Vector3 mousePosition = Input.mousePosition;
+
+        // Check if mouse is within screen bounds
+        if (mousePosition.x < 0 || mousePosition.x > Screen.width ||
+            mousePosition.y < 0 || mousePosition.y > Screen.height ||
+            Camera.main == null)
+        {
+            if (isHovering)
+            {
+                StopHoverAnimation();
+            }
+            return;
+        }
+
+        Ray ray = Camera.main.ScreenPointToRay(mousePosition);
         if (Physics.Raycast(ray, out RaycastHit hit) && hit.collider.GetComponent<TalkCursorMarker>() != null)
         {
             if (!isHovering) {

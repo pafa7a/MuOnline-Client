@@ -135,24 +135,37 @@ public class PlayerMovement : MonoBehaviour
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 if (Physics.Raycast(ray, out RaycastHit hit))
                 {
-                    // Prepare and send the WalkRequest
-                    WalkRequest walkRequest = new()
+                    Vector3 hitPoint = hit.point;
+                    
+                    // Check if the point is within terrain bounds
+                    Vector3 terrainPosition = hitPoint - _cachedTerrainPosition;
+                    float normalizedX = terrainPosition.x / _cachedTerrainData.size.x;
+                    float normalizedZ = terrainPosition.z / _cachedTerrainData.size.z;
+
+                    // Skip if out of bounds
+                    if (normalizedX < 0 || normalizedX > 1 || normalizedZ < 0 || normalizedZ > 1)
+                        return;
+
+                    // Also verify the point is on the NavMesh
+                    if (NavMesh.SamplePosition(hitPoint, out NavMeshHit navHit, 3.0f, NavMesh.AllAreas))
                     {
-                        X = Mathf.Round(hit.point.x),
-                        Y = Mathf.Round(hit.point.y),
-                        Z = Mathf.Round(hit.point.z),
-                    };
+                        // Prepare and send the WalkRequest using the validated position
+                        WalkRequest walkRequest = new()
+                        {
+                            X = Mathf.Round(navHit.position.x),
+                            Y = Mathf.Round(navHit.position.y),
+                            Z = Mathf.Round(navHit.position.z),
+                        };
 
-                    Wrapper wrapper = new()
-                    {
-                        Type = "WalkRequest",
-                        Payload = walkRequest.ToByteString()
-                    };
+                        Wrapper wrapper = new()
+                        {
+                            Type = "WalkRequest",
+                            Payload = walkRequest.ToByteString()
+                        };
 
-                    WebSocketClient.Send(wrapper.ToByteArray());
-
-                    // Update the time of the last request
-                    lastRequestTime = Time.time;
+                        WebSocketClient.Send(wrapper.ToByteArray());
+                        lastRequestTime = Time.time;
+                    }
                 }
             }
         }

@@ -110,12 +110,27 @@ public class CanvasManager : MonoBehaviour
         // Get mouse position in screen coordinates
         Vector3 mousePosition = Input.mousePosition;
 
-        // Convert to world position
-        Ray ray = Camera.main.ScreenPointToRay(mousePosition);
-        if (Physics.Raycast(ray, out RaycastHit hit))
+        // Check if mouse is within screen bounds
+        if (mousePosition.x < 0 || mousePosition.x > Screen.width ||
+            mousePosition.y < 0 || mousePosition.y > Screen.height)
         {
-            Vector3 worldPosition = hit.point;
-            MouseCoordinates.text = $"Mouse: X: {worldPosition.x:F2}, Y: {worldPosition.y:F2}, Z: {worldPosition.z:F2}";
+            MouseCoordinates.text = "Mouse: Outside view";
+            return;
+        }
+
+        // Only do raycast if we have a main camera
+        if (Camera.main != null)
+        {
+            Ray ray = Camera.main.ScreenPointToRay(mousePosition);
+            if (Physics.Raycast(ray, out RaycastHit hit))
+            {
+                Vector3 worldPosition = hit.point;
+                MouseCoordinates.text = $"Mouse: X: {worldPosition.x:F2}, Y: {worldPosition.y:F2}, Z: {worldPosition.z:F2}";
+            }
+            else
+            {
+                MouseCoordinates.text = $"Mouse: X: {mousePosition.x:F0}, Y: {mousePosition.y:F0}";
+            }
         }
         else
         {
