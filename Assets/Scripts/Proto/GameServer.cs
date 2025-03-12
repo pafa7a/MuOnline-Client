@@ -42,19 +42,20 @@ namespace GameServerProto {
             "IAEoCRINCgVlbWFpbBgCIAEoCRIQCghwYXNzd29yZBgDIAEoCRIPCgd2ZXJz",
             "aW9uGAQgASgJEg4KBnNlcmlhbBgFIAEoCSI/ChBSZWdpc3RlclJlc3BvbnNl",
             "EisKDHJlc3BvbnNlQ29kZRgBIAEoDjIVLlJlZ2lzdGVyUmVzcG9uc2VFbnVt",
-            "IigKFVBsYXllclNlbmRDaGF0TWVzc2FnZRIPCgdtZXNzYWdlGAEgASgJIjMK",
-            "DkFkZENoYXRNZXNzYWdlEhAKCHVzZXJuYW1lGAEgASgJEg8KB21lc3NhZ2UY",
-            "AiABKAkq2AEKEUxvZ2luUmVzcG9uc2VFbnVtEgwKCExPR0lOX09LEAASHQoZ",
-            "TE9HSU5fSU5WQUxJRF9DUkVERU5USUFMUxABEhkKFUxPR0lOX0lOVkFMSURf",
-            "VkVSU0lPThACEhgKFExPR0lOX0lOVkFMSURfU0VSSUFMEAMSFQoRTE9HSU5f",
-            "U0VSVkVSX0ZVTEwQBBIbChdMT0dJTl9BTFJFQURZX0NPTk5FQ1RFRBAFEhsK",
-            "F0xPR0lOX1RPT19NQU5ZX0FUVEVNUFRTEAYSEAoMTE9HSU5fQkFOTkVEEAcq",
-            "6AEKFFJlZ2lzdGVyUmVzcG9uc2VFbnVtEg8KC1JFR0lTVEVSX09LEAASEgoO",
-            "UkVHSVNURVJfRVJST1IQARIaChZSRUdJU1RFUl9JTlZBTElEX0lOUFVUEAIS",
-            "GgoWUkVHSVNURVJfSU5WQUxJRF9FTUFJTBADEhwKGFJFR0lTVEVSX0lOVkFM",
-            "SURfVkVSU0lPThAEEhsKF1JFR0lTVEVSX0lOVkFMSURfU0VSSUFMEAUSGAoU",
-            "UkVHSVNURVJfVVNFUl9FWElTVFMQBhIeChpSRUdJU1RFUl9UT09fTUFOWV9B",
-            "VFRFTVBUUxAHQhKqAg9HYW1lU2VydmVyUHJvdG9iBnByb3RvMw=="));
+            "IigKFVBsYXllclNlbmRDaGF0TWVzc2FnZRIPCgdtZXNzYWdlGAEgASgJIj8K",
+            "DkFkZENoYXRNZXNzYWdlEgoKAmlkGAEgASgJEhAKCHVzZXJuYW1lGAIgASgJ",
+            "Eg8KB21lc3NhZ2UYAyABKAkq2AEKEUxvZ2luUmVzcG9uc2VFbnVtEgwKCExP",
+            "R0lOX09LEAASHQoZTE9HSU5fSU5WQUxJRF9DUkVERU5USUFMUxABEhkKFUxP",
+            "R0lOX0lOVkFMSURfVkVSU0lPThACEhgKFExPR0lOX0lOVkFMSURfU0VSSUFM",
+            "EAMSFQoRTE9HSU5fU0VSVkVSX0ZVTEwQBBIbChdMT0dJTl9BTFJFQURZX0NP",
+            "Tk5FQ1RFRBAFEhsKF0xPR0lOX1RPT19NQU5ZX0FUVEVNUFRTEAYSEAoMTE9H",
+            "SU5fQkFOTkVEEAcq6AEKFFJlZ2lzdGVyUmVzcG9uc2VFbnVtEg8KC1JFR0lT",
+            "VEVSX09LEAASEgoOUkVHSVNURVJfRVJST1IQARIaChZSRUdJU1RFUl9JTlZB",
+            "TElEX0lOUFVUEAISGgoWUkVHSVNURVJfSU5WQUxJRF9FTUFJTBADEhwKGFJF",
+            "R0lTVEVSX0lOVkFMSURfVkVSU0lPThAEEhsKF1JFR0lTVEVSX0lOVkFMSURf",
+            "U0VSSUFMEAUSGAoUUkVHSVNURVJfVVNFUl9FWElTVFMQBhIeChpSRUdJU1RF",
+            "Ul9UT09fTUFOWV9BVFRFTVBUUxAHQhKqAg9HYW1lU2VydmVyUHJvdG9iBnBy",
+            "b3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::GameServerProto.LoginResponseEnum), typeof(global::GameServerProto.RegisterResponseEnum), }, null, new pbr::GeneratedClrTypeInfo[] {
@@ -70,7 +71,7 @@ namespace GameServerProto {
             new pbr::GeneratedClrTypeInfo(typeof(global::GameServerProto.RegisterRequest), global::GameServerProto.RegisterRequest.Parser, new[]{ "Username", "Email", "Password", "Version", "Serial" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::GameServerProto.RegisterResponse), global::GameServerProto.RegisterResponse.Parser, new[]{ "ResponseCode" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::GameServerProto.PlayerSendChatMessage), global::GameServerProto.PlayerSendChatMessage.Parser, new[]{ "Message" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::GameServerProto.AddChatMessage), global::GameServerProto.AddChatMessage.Parser, new[]{ "Username", "Message" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::GameServerProto.AddChatMessage), global::GameServerProto.AddChatMessage.Parser, new[]{ "Id", "Username", "Message" }, null, null, null, null)
           }));
     }
     #endregion
@@ -3260,6 +3261,7 @@ namespace GameServerProto {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public AddChatMessage(AddChatMessage other) : this() {
+      id_ = other.id_;
       username_ = other.username_;
       message_ = other.message_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
@@ -3271,8 +3273,20 @@ namespace GameServerProto {
       return new AddChatMessage(this);
     }
 
+    /// <summary>Field number for the "id" field.</summary>
+    public const int IdFieldNumber = 1;
+    private string id_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public string Id {
+      get { return id_; }
+      set {
+        id_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
     /// <summary>Field number for the "username" field.</summary>
-    public const int UsernameFieldNumber = 1;
+    public const int UsernameFieldNumber = 2;
     private string username_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -3284,7 +3298,7 @@ namespace GameServerProto {
     }
 
     /// <summary>Field number for the "message" field.</summary>
-    public const int MessageFieldNumber = 2;
+    public const int MessageFieldNumber = 3;
     private string message_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -3310,6 +3324,7 @@ namespace GameServerProto {
       if (ReferenceEquals(other, this)) {
         return true;
       }
+      if (Id != other.Id) return false;
       if (Username != other.Username) return false;
       if (Message != other.Message) return false;
       return Equals(_unknownFields, other._unknownFields);
@@ -3319,6 +3334,7 @@ namespace GameServerProto {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
+      if (Id.Length != 0) hash ^= Id.GetHashCode();
       if (Username.Length != 0) hash ^= Username.GetHashCode();
       if (Message.Length != 0) hash ^= Message.GetHashCode();
       if (_unknownFields != null) {
@@ -3339,12 +3355,16 @@ namespace GameServerProto {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      if (Username.Length != 0) {
+      if (Id.Length != 0) {
         output.WriteRawTag(10);
+        output.WriteString(Id);
+      }
+      if (Username.Length != 0) {
+        output.WriteRawTag(18);
         output.WriteString(Username);
       }
       if (Message.Length != 0) {
-        output.WriteRawTag(18);
+        output.WriteRawTag(26);
         output.WriteString(Message);
       }
       if (_unknownFields != null) {
@@ -3357,12 +3377,16 @@ namespace GameServerProto {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (Username.Length != 0) {
+      if (Id.Length != 0) {
         output.WriteRawTag(10);
+        output.WriteString(Id);
+      }
+      if (Username.Length != 0) {
+        output.WriteRawTag(18);
         output.WriteString(Username);
       }
       if (Message.Length != 0) {
-        output.WriteRawTag(18);
+        output.WriteRawTag(26);
         output.WriteString(Message);
       }
       if (_unknownFields != null) {
@@ -3375,6 +3399,9 @@ namespace GameServerProto {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
+      if (Id.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Id);
+      }
       if (Username.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Username);
       }
@@ -3392,6 +3419,9 @@ namespace GameServerProto {
     public void MergeFrom(AddChatMessage other) {
       if (other == null) {
         return;
+      }
+      if (other.Id.Length != 0) {
+        Id = other.Id;
       }
       if (other.Username.Length != 0) {
         Username = other.Username;
@@ -3419,10 +3449,14 @@ namespace GameServerProto {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 10: {
-            Username = input.ReadString();
+            Id = input.ReadString();
             break;
           }
           case 18: {
+            Username = input.ReadString();
+            break;
+          }
+          case 26: {
             Message = input.ReadString();
             break;
           }
@@ -3446,10 +3480,14 @@ namespace GameServerProto {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
           case 10: {
-            Username = input.ReadString();
+            Id = input.ReadString();
             break;
           }
           case 18: {
+            Username = input.ReadString();
+            break;
+          }
+          case 26: {
             Message = input.ReadString();
             break;
           }

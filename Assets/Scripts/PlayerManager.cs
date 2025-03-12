@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -16,6 +17,9 @@ public class PlayerManager : MonoBehaviour
 
     // Add new field for ceiling objects
     private List<GameObject> _ceilingObjects = new();
+
+    // Add a Dictionary to store coroutines per player
+    private Dictionary<string, Coroutine> chatCoroutines = new();
 
     void Awake()
     {
@@ -157,5 +161,35 @@ public class PlayerManager : MonoBehaviour
         players.Remove(playerId);
 
         Debug.Log($"Removed player with ID: {playerId}");
+    }
+
+    public void AddPlayerChatBubble(string playerId, string message)
+    {
+        if (!players.ContainsKey(playerId))
+        {
+            Debug.LogWarning($"Player {playerId} not found. Cannot add chat bubble.");
+            return;
+        }
+
+        GameObject player = players[playerId];
+        GameObject chat = player.transform.Find("Chat").gameObject;
+        var chatText = chat.GetComponentInChildren<TMP_Text>();
+        chatText.text = message;
+
+        // Stop existing coroutine if it exists
+        if (chatCoroutines.TryGetValue(playerId, out Coroutine existingCoroutine))
+        {
+            if (existingCoroutine != null)
+                StopCoroutine(existingCoroutine);
+        }
+
+        // Start new coroutine and store its reference
+        chatCoroutines[playerId] = StartCoroutine(ClearChatTextAfterDelay(chatText));
+    }
+
+    private IEnumerator ClearChatTextAfterDelay(TMP_Text chatText)
+    {
+        yield return new WaitForSeconds(5f);
+        chatText.text = string.Empty;
     }
 }
