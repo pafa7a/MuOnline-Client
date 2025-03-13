@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using GameServerProto;
 using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
@@ -46,8 +47,9 @@ public class PlayerManager : MonoBehaviour
     playersParent = parent.transform;
   }
 
-  public void SpawnPlayer(string playerId, Vector3 position, Quaternion rotation, bool isLocal = false)
+  public void SpawnPlayer(PlayerData playerData, Vector3 position, Quaternion rotation, bool isLocal = false)
   {
+    string playerId = playerData.Id;
     if (players.ContainsKey(playerId))
     {
       Debug.LogWarning($"Player {playerId} is already spawned.");
@@ -56,7 +58,10 @@ public class PlayerManager : MonoBehaviour
 
     GameObject player = Instantiate(playerPrefab, position, rotation, playersParent);
     player.name = playerId;
-    player.GetComponentInChildren<TextMeshPro>().text = playerId;
+    
+    GameObject title = player.transform.Find("Title").gameObject;
+    var playerTitle = title.GetComponentInChildren<TMP_Text>();
+    playerTitle.text = playerData.Username;
 
     NavMeshAgent agent = player.GetComponent<NavMeshAgent>();
     if (agent != null)

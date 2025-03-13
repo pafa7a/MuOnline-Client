@@ -9080,6 +9080,7 @@ GameObject:
   - component: {fileID: 190690657}
   - component: {fileID: 190690660}
   - component: {fileID: 190690661}
+  - component: {fileID: 190690662}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -9154,8 +9155,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 190690656}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.31225812, y: -0.6109348, z: -0.28500816, w: 0.66934586}
-  m_LocalPosition: {x: 22.755749, y: 353.67758, z: 33.60983}
+  m_LocalRotation: {x: -0.016225023, y: -0.69258237, z: -0.015586276, w: 0.72098786}
+  m_LocalPosition: {x: 242.36531, y: 4.500338, z: 25.45177}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -9227,6 +9228,27 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &190690662
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 190690656}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 74534609bd348974691ed611b66e7f35, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 0}
+  offset: {x: 0, y: 10, z: -10}
+  smoothSpeed: 1
+  scrollSensitivity: 2
+  minZoom: 5
+  maxZoom: 20
+  rotationSpeed: 5
+  minVerticalAngle: -30
+  maxVerticalAngle: 15
 --- !u!1 &190935164
 GameObject:
   m_ObjectHideFlags: 0

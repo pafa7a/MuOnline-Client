@@ -1344,6 +1344,7 @@ MonoBehaviour:
   inputFields:
   - {fileID: 6193180313229837175}
   - {fileID: 4910313632446149123}
+  currentInputIndex: 0
 --- !u!1 &6550251065899463883
 GameObject:
   m_ObjectHideFlags: 0
@@ -1523,7 +1524,7 @@ MonoBehaviour:
   m_AsteriskChar: 42
   m_KeyboardType: 0
   m_LineType: 0
-  m_HideMobileInput: 0
+  m_HideMobileInput: 1
   m_HideSoftKeyboard: 0
   m_CharacterValidation: 0
   m_RegexValue: 

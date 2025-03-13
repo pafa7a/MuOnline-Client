@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class CursorManager : MonoBehaviour
 {
@@ -20,6 +19,8 @@ public class CursorManager : MonoBehaviour
 
     void Awake()
     {
+
+        TouchScreenKeyboard.hideInput = true;
         // Ensure only one instance exists
         if (Instance == null)
         {
@@ -62,7 +63,8 @@ public class CursorManager : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(mousePosition);
         if (Physics.Raycast(ray, out RaycastHit hit) && hit.collider.GetComponent<TalkCursorMarker>() != null)
         {
-            if (!isHovering) {
+            if (!isHovering)
+            {
                 StartHoverAnimation();
             }
         }
@@ -75,23 +77,28 @@ public class CursorManager : MonoBehaviour
     private async Task HandleClickAsync()
     {
         // Change cursor only if it's not already hovering.
-        if (!isHovering) {
+        if (!isHovering)
+        {
             if (Input.GetMouseButtonDown(0)) Cursor.SetCursor(clickCursor, hotSpot, cursorMode);
             else if (Input.GetMouseButtonUp(0) && !isHovering) Cursor.SetCursor(defaultCursor, hotSpot, cursorMode);
         }
-        else {
-            
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        
-        if (Input.GetMouseButtonDown(0) && Physics.Raycast(ray, out RaycastHit hit) && hit.collider.GetComponent<TalkCursorMarker>() != null) {
-            if (hit.collider.GetComponent<TalkCursorMarker>().name == "Capsule") {
-                WebSocketClient.instance.ConnectToGameServer("localhost", 55901, 1);
+        else
+        {
+
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+            if (Input.GetMouseButtonDown(0) && Physics.Raycast(ray, out RaycastHit hit) && hit.collider.GetComponent<TalkCursorMarker>() != null)
+            {
+                if (hit.collider.GetComponent<TalkCursorMarker>().name == "Capsule")
+                {
+                    WebSocketClient.instance.ConnectToGameServer("localhost", 55901, 1);
+                }
+                if (hit.collider.GetComponent<TalkCursorMarker>().name == "Cube")
+                {
+                    await WebSocketClient.instance.ConnectToConnectServer();
+                    CanvasManager.LoadScene("World75");
+                }
             }
-            if (hit.collider.GetComponent<TalkCursorMarker>().name == "Cube") {
-                await WebSocketClient.instance.ConnectToConnectServer();
-                CanvasManager.LoadScene("World75");
-            }
-        }
         }
     }
 
