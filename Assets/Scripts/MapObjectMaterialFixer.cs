@@ -8,7 +8,7 @@ public class MapObjectMaterialFixer : MonoBehaviour
     FixMaterials();
   }
 
-  void Start()
+  void Update()
   {
     FixMaterials();
   }
@@ -23,15 +23,7 @@ public class MapObjectMaterialFixer : MonoBehaviour
         if (material != null)
         {
           material.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Off);
-          material.SetInt("_ZWrite", 1);
-          material.SetFloat("_Mode", 0);
-          material.renderQueue = -1;
-          material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-          material.DisableKeyword("_ALPHABLEND_ON");
           material.EnableKeyword("_ALPHATEST_ON");
-          material.SetOverrideTag("RenderType", "TransparentCutout");
-          material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
-          material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
         }
       }
     }
