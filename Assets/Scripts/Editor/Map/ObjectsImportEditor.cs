@@ -130,6 +130,9 @@ public class ObjectsImportEditor : MonoBehaviour
         instance.transform.localScale = new Vector3(scale, scale, scale);
         instance.transform.SetParent(parentObject.transform);
 
+        // Add the material fixer component
+        instance.AddComponent<MapObjectMaterialFixer>();
+
         // Add height controller for Object111 in map 74 or in ServerSelect scene
         if (mapNumber == "74" && objectName == "Object111" && UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "ServerSelect")
         {
