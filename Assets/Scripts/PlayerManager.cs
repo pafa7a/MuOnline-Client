@@ -27,6 +27,7 @@ public class PlayerManager : MonoBehaviour
     if (Instance == null)
     {
       Instance = this;
+      DontDestroyOnLoad(gameObject);
       CurrentSceneName = SceneManager.GetActiveScene().name;
 
       // Cache ceiling objects if we're in World1
