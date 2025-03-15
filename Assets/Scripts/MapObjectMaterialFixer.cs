@@ -8,7 +8,7 @@ public class MapObjectMaterialFixer : MonoBehaviour
     FixMaterials();
   }
 
-  void Update()
+  void Start()
   {
     FixMaterials();
   }
