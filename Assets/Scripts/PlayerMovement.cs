@@ -3,6 +3,7 @@ using Google.Protobuf;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.SceneManagement;
+using Color = UnityEngine.Color;
 
 public class PlayerMovement : MonoBehaviour
 {

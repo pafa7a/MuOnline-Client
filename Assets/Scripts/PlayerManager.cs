@@ -103,6 +103,12 @@ public class PlayerManager : MonoBehaviour
       }
     }
 
+    // Set the player color if any.
+    if (playerData.Color != null)
+    {
+      SetPlayerColor(playerId, playerData.Color);
+    }
+
     Debug.Log($"Spawned {(isLocal ? "local" : "other")} player with ID: {playerId}");
   }
 
@@ -217,5 +223,21 @@ public class PlayerManager : MonoBehaviour
   {
     yield return new WaitForSeconds(5f);
     chatText.text = string.Empty;
+  }
+
+  public void SetPlayerColor(string playerId, GameServerProto.Color color)
+  {
+    if (!players.ContainsKey(playerId))
+    {
+      Debug.LogWarning($"Player {playerId} not found. Cannot set color.");
+      return;
+    }
+
+    GameObject player = players[playerId];
+    Renderer renderer = player.GetComponentInChildren<Renderer>();
+    if (renderer != null)
+    {
+      renderer.material.color = new UnityEngine.Color(color.R / 255f, color.G / 255f, color.B / 255f);
+    }
   }
 }

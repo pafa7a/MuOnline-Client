@@ -117,7 +117,7 @@ public class ChatSystem : MonoBehaviour
     if (chatText != null)
     {
       chatText.text += $"\n{message}";
-      chatViewWrapper.GetComponent<Image>().color = new Color(0, 0, 0, 0.588f);
+      chatViewWrapper.GetComponent<Image>().color = new UnityEngine.Color(0, 0, 0, 0.588f);
     }
   }
 }
