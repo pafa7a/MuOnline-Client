@@ -45131,7 +45131,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerPrefab: {fileID: 2942452666300279103, guid: 02146ec126907dc4bbf896112824a924, type: 3}
-  ownPlayerId: 1
+  ownPlayerId: 
 --- !u!4 &1042215385
 Transform:
   m_ObjectHideFlags: 0

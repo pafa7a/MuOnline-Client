@@ -44,6 +44,7 @@ public class PlayerManager : MonoBehaviour
     // Create the "Players" parent object dynamically
     GameObject parent = new("Players");
     playersParent = parent.transform;
+    parent.transform.SetParent(transform);
   }
 
   private void OnDestroy()

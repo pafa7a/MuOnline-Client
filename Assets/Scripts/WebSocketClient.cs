@@ -183,6 +183,17 @@ public class WebSocketClient : MonoBehaviour
         {
             Debug.Log("Closing WebSocket connection intentionally.");
             await websocket.Close();
+
+            // Clear all players before closing connection
+            if (PlayerManager.Instance != null)
+            {
+                var playerIds = PlayerManager.Instance.players.Keys.ToList();
+                foreach (var playerId in playerIds)
+                {
+                    PlayerManager.Instance.RemovePlayer(playerId);
+                }
+                PlayerManager.Instance.players.Clear();
+            }
         }
     }
 

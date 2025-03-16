@@ -89,14 +89,10 @@ public class CursorManager : MonoBehaviour
 
             if (Input.GetMouseButtonDown(0) && Physics.Raycast(ray, out RaycastHit hit) && hit.collider.GetComponent<TalkCursorMarker>() != null)
             {
-                if (hit.collider.GetComponent<TalkCursorMarker>().name == "Capsule")
-                {
-                    WebSocketClient.instance.ConnectToGameServer("localhost", 55901, 1);
-                }
                 if (hit.collider.GetComponent<TalkCursorMarker>().name == "Cube")
                 {
                     await WebSocketClient.instance.ConnectToConnectServer();
-                    CanvasManager.LoadScene("World75");
+                    CanvasManager.LoadScene("ServerSelect");
                 }
             }
         }
