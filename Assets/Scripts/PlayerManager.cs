@@ -30,12 +30,10 @@ public class PlayerManager : MonoBehaviour
       DontDestroyOnLoad(gameObject);
       CurrentSceneName = SceneManager.GetActiveScene().name;
 
-      // Cache ceiling objects if we're in World1
-      if (CurrentSceneName == "World1")
-      {
-        _ceilingObjects.AddRange(GameObject.FindGameObjectsWithTag("Ceiling"));
-        Debug.Log($"Found {_ceilingObjects.Count} ceiling objects in World1");
-      }
+      SceneManager.sceneLoaded += OnSceneLoaded;
+      // Run logic for initial scene
+      CurrentSceneName = SceneManager.GetActiveScene().name;
+      HandleSceneLogic(CurrentSceneName);
     }
     else
     {
@@ -46,6 +44,27 @@ public class PlayerManager : MonoBehaviour
     // Create the "Players" parent object dynamically
     GameObject parent = new("Players");
     playersParent = parent.transform;
+  }
+
+  private void OnDestroy()
+  {
+    // Unsubscribe when destroyed to avoid memory leaks
+    SceneManager.sceneLoaded -= OnSceneLoaded;
+  }
+
+  private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+  {
+    CurrentSceneName = scene.name;
+    HandleSceneLogic(CurrentSceneName);
+  }
+
+  private void HandleSceneLogic(string sceneName)
+  {
+    if (sceneName == "World1")
+    {
+      _ceilingObjects.Clear();
+      _ceilingObjects.AddRange(GameObject.FindGameObjectsWithTag("Ceiling"));
+    }
   }
 
   public void SpawnPlayer(PlayerData playerData, Vector3 position, Quaternion rotation, bool isLocal = false)
@@ -59,7 +78,7 @@ public class PlayerManager : MonoBehaviour
 
     GameObject player = Instantiate(playerPrefab, position, rotation, playersParent);
     player.name = playerId;
-    
+
     GameObject title = player.transform.Find("Title").gameObject;
     var playerTitle = title.GetComponentInChildren<TMP_Text>();
     playerTitle.text = playerData.Username;

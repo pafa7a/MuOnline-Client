@@ -24031,8 +24031,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13969d9781a7c7d4384f819e08af2a71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameServerIp: server.mu.tsan.dev
-  connectServerIp: server.mu.tsan.dev
+  gameServerIp: die-mu.com
+  connectServerIp: die-mu.com
   useWSS: 1
   connectServerPort: 44405
   gameServerPort: 0
