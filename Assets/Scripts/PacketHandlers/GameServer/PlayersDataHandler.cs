@@ -1,6 +1,7 @@
 using System;
 using GameServerProto;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 [MessageType("PlayersData")]
 public class PlayersDataHandler : IMessageHandler
@@ -8,6 +9,10 @@ public class PlayersDataHandler : IMessageHandler
     public void HandleMessage(byte[] message, Action<byte[]> sendMessage)
     {
         if (PlayerManager.Instance == null)
+        {
+            return;
+        }
+        if (SceneManager.GetActiveScene().name != "World1")
         {
             return;
         }
